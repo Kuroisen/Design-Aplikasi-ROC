@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Tambah ROC</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container" class="shrink-0"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <a href="self-assessment.html" class="text-slate-500 hover:text-slate-300 transition">Self-Assessment</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="text-slate-500">ROC</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Tambah ROC</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+                
+                <!-- Page Header & Tombol Kembali -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-wide">Tambah ROC</h2>
+                        <p class="text-xs text-slate-400 mt-1">Isi parameter tahun, periode, company, divisi, dan unit untuk membuat data Self-Assessment ROC baru.</p>
+                    </div>
+                    <a
+                        href="self-assessment.html"
+                        class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/70 rounded-lg text-xs font-semibold transition inline-flex items-center space-x-2 w-fit shrink-0"
+                    >
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                        <span>Kembali ke Daftar ROC</span>
+                    </a>
+                </div>
+
+                <!-- Notifikasi Status -->
+                <div id="alertBanner" class="hidden rounded-xl border px-5 py-3.5 text-xs flex items-center justify-between gap-4">
+                    <div class="flex items-center space-x-2.5">
+                        <i id="alertIcon" class="fa-solid fa-circle-check text-sm"></i>
+                        <span id="alertText"></span>
+                    </div>
+                    <button type="button" onclick="hideAlert()" class="text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Card Form Tambah ROC -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-file-circle-plus text-blue-500 text-sm"></i>
+                            <h3 class="text-sm font-semibold text-white tracking-wide">Form Pengisian ROC</h3>
+                        </div>
+                        <span class="text-[11px] text-slate-400">Field bertanda <span class="text-rose-400">*</span> wajib diisi</span>
+                    </div>
+
+                    <form id="formTambahRoc" onsubmit="handleSubmitRoc(event)" class="p-6 space-y-6 text-xs">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- Tahun -->
+                            <div class="space-y-1.5">
+                                <label for="tahun" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                                    <i class="fa-solid fa-calendar text-blue-400 text-[11px]"></i>
+                                    <span>Tahun <span class="text-rose-400">*</span></span>
+                                </label>
+                                <select
+                                    id="tahun"
+                                    name="tahun"
+                                    required
+                                    class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                                >
+                                    <option value="">-- Pilih Tahun --</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026" selected>2026</option>
+                                    <option value="2027">2027</option>
+                                </select>
+                            </div>
+
+                            <!-- Periode -->
+                            <div class="space-y-1.5">
+                                <label for="periode" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                                    <i class="fa-solid fa-clock-rotate-left text-indigo-400 text-[11px]"></i>
+                                    <span>Periode <span class="text-rose-400">*</span></span>
+                                </label>
+                                <select
+                                    id="periode"
+                                    name="periode"
+                                    required
+                                    class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                                >
+                                    <option value="">-- Pilih Periode --</option>
+                                    <option value="Triwulan I">Triwulan I</option>
+                                    <option value="Triwulan II">Triwulan II</option>
+                                    <option value="Triwulan III">Triwulan III</option>
+                                    <option value="Triwulan IV" selected>Triwulan IV</option>
+                                    <option value="Semester I">Semester I</option>
+                                    <option value="Semester II">Semester II</option>
+                                </select>
+                            </div>
+
+                            <!-- Company -->
+                            <div class="space-y-1.5">
+                                <label for="company" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                                    <i class="fa-solid fa-city text-cyan-400 text-[11px]"></i>
+                                    <span>Company <span class="text-rose-400">*</span></span>
+                                </label>
+                                <select
+                                    id="company"
+                                    name="company"
+                                    required
+                                    onchange="handleCompanyChange()"
+                                    class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                                >
+                                    <option value="">-- Pilih Company --</option>
+                                    <option value="PT Bank Kalsel">PT Bank Kalsel</option>
+                                    <option value="Bangga Solution">Bangga Solution</option>
+                                </select>
+                            </div>
+
+                            <!-- Divisi -->
+                            <div class="space-y-1.5">
+                                <label for="divisi" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                                    <i class="fa-solid fa-sitemap text-amber-400 text-[11px]"></i>
+                                    <span>Divisi <span class="text-rose-400">*</span></span>
+                                </label>
+                                <select
+                                    id="divisi"
+                                    name="divisi"
+                                    required
+                                    onchange="handleDivisiChange()"
+                                    class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                                >
+                                    <option value="">-- Pilih Divisi --</option>
+                                </select>
+                            </div>
+
+                            <!-- Unit -->
+                            <div class="md:col-span-2 space-y-1.5">
+                                <label for="unit" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                                    <i class="fa-solid fa-building text-emerald-400 text-[11px]"></i>
+                                    <span>Unit <span class="text-rose-400">*</span></span>
+                                </label>
+                                <select
+                                    id="unit"
+                                    name="unit"
+                                    required
+                                    class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                                >
+                                    <option value="">-- Pilih Unit --</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800/90">
+                            <button
+                                type="button"
+                                onclick="handleResetForm()"
+                                class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium transition"
+                            >
+                                Reset
+                            </button>
+                            <a
+                                href="self-assessment.html"
+                                class="px-4 py-2.5 bg-slate-800/70 hover:bg-slate-800 text-slate-300 border border-slate-700/60 rounded-lg font-medium transition"
+                            >
+                                Batal
+                            </a>
+                            <button
+                                type="submit"
+                                class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition shadow-lg shadow-blue-600/20 inline-flex items-center space-x-2"
+                            >
+                                <i class="fa-solid fa-floppy-disk text-xs"></i>
+                                <span>Simpan ROC</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../sidebar.js"></script>
+
+    <!-- Script Form Tambah ROC -->
+    <script>
+        const orgHierarchy = {
+            "PT Bank Kalsel": {
+                "Divisi Kepatuhan & Risiko": [
+                    "Satuan Kerja Kepatuhan (SKK)",
+                    "Satuan Kerja Manajemen Risiko (SKMR)"
+                ],
+                "Divisi Audit & Pengendalian": [
+                    "Satuan Kerja Audit Internal (SKAI)"
+                ],
+                "Divisi Operasional & Layanan": [
+                    "Unit Layanan Operasional Pusat",
+                    "Unit Dukungan Kantor Cabang"
+                ]
+            },
+            "Bangga Solution": {
+                "Divisi Governance, Risk & Compliance": [
+                    "Unit Compliance & Risk Advisory",
+                    "Unit Quality & Audit Assurance"
+                ],
+                "Divisi Teknologi & Delivery": [
+                    "Unit Enterprise Application",
+                    "Unit Infrastructure & Security"
+                ]
+            }
+        };
+
+        function populateCompanies() {
+            const companySelect = document.getElementById("company");
+            const currentValue = companySelect.value;
+            const companies = Object.keys(orgHierarchy);
+            companySelect.innerHTML = `<option value="">-- Pilih Company --</option>` + companies.map(comp =>
+                `<option value="${comp}">${comp}</option>`
+            ).join("");
+            if (companies.includes(currentValue)) {
+                companySelect.value = currentValue;
+            }
+        }
+
+        function handleCompanyChange() {
+            const company = document.getElementById("company").value;
+            const divisiSelect = document.getElementById("divisi");
+            const unitSelect = document.getElementById("unit");
+
+            divisiSelect.innerHTML = `<option value="">-- Pilih Divisi --</option>`;
+            unitSelect.innerHTML = `<option value="">-- Pilih Unit --</option>`;
+
+            if (!company || !orgHierarchy[company]) return;
+
+            const divisions = Object.keys(orgHierarchy[company]);
+            divisiSelect.innerHTML += divisions.map(div =>
+                `<option value="${div}">${div}</option>`
+            ).join("");
+        }
+
+        function handleDivisiChange() {
+            const company = document.getElementById("company").value;
+            const divisi = document.getElementById("divisi").value;
+            const unitSelect = document.getElementById("unit");
+
+            unitSelect.innerHTML = `<option value="">-- Pilih Unit --</option>`;
+
+            if (!company || !divisi || !orgHierarchy[company]?.[divisi]) return;
+
+            const units = orgHierarchy[company][divisi];
+            unitSelect.innerHTML += units.map(u =>
+                `<option value="${u}">${u}</option>`
+            ).join("");
+        }
+
+        function showAlert(type, message) {
+            const banner = document.getElementById("alertBanner");
+            const icon = document.getElementById("alertIcon");
+            const text = document.getElementById("alertText");
+
+            banner.classList.remove("hidden", "bg-emerald-500/10", "border-emerald-500/30", "text-emerald-300", "bg-rose-500/10", "border-rose-500/30", "text-rose-300");
+
+            if (type === "success") {
+                banner.classList.add("bg-emerald-500/10", "border-emerald-500/30", "text-emerald-300");
+                icon.className = "fa-solid fa-circle-check text-emerald-400 text-sm";
+            } else {
+                banner.classList.add("bg-rose-500/10", "border-rose-500/30", "text-rose-300");
+                icon.className = "fa-solid fa-circle-exclamation text-rose-400 text-sm";
+            }
+
+            text.textContent = message;
+        }
+
+        function hideAlert() {
+            document.getElementById("alertBanner").classList.add("hidden");
+        }
+
+        function handleResetForm() {
+            document.getElementById("formTambahRoc").reset();
+            document.getElementById("tahun").value = "2026";
+            document.getElementById("periode").value = "Triwulan IV";
+            handleCompanyChange();
+            hideAlert();
+        }
+
+        function handleSubmitRoc(event) {
+            event.preventDefault();
+
+            const tahun = document.getElementById("tahun").value;
+            const periode = document.getElementById("periode").value;
+            const company = document.getElementById("company").value;
+            const divisi = document.getElementById("divisi").value;
+            const unit = document.getElementById("unit").value;
+
+            if (!tahun || !periode || !company || !divisi || !unit) {
+                showAlert("error", "Mohon lengkapi seluruh field wajib: Tahun, Periode, Company, Divisi, dan Unit.");
+                return;
+            }
+
+            const now = new Date();
+            const bulanSingkat = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+            const tanggalFormatted = `${now.getDate()} ${bulanSingkat[now.getMonth()]} ${now.getFullYear()}`;
+
+            const newRocItem = {
+                id: `ROC-${Date.now()}`,
+                tahun,
+                periode,
+                company,
+                divisi,
+                unit,
+                jumlahIndikator: 0,
+                progress: 0,
+                tanggalIso: now.toISOString().split("T")[0],
+                tanggalPembuatan: tanggalFormatted
+            };
+
+            try {
+                const existing = JSON.parse(localStorage.getItem("eComplianceRocList") || "[]");
+                existing.unshift(newRocItem);
+                localStorage.setItem("eComplianceRocList", JSON.stringify(existing));
+            } catch (err) {
+                // Abaikan jika storage dibatasi
+            }
+
+            showAlert("success", `Data ROC berhasil disimpan (${tahun} • ${periode} • ${company} • ${divisi} • ${unit}). Mengalihkan ke daftar Self-Assessment...`);
+
+            setTimeout(() => {
+                window.location.href = "self-assessment.html";
+            }, 900);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            populateCompanies();
+            handleCompanyChange();
+        });
+    </script>
+</body>
+</html>

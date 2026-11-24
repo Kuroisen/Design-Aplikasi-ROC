@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Regulasi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-6 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">Library</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Regulasi</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+                
+                <!-- Header Title & Tombol Tambah Regulasi -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Daftar Regulasi</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Kelola peraturan, status aktif, dan detail dokumen regulasi kepatuhan.</p>
+                    </div>
+                    <a href="tambah-regulasi.html" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-blue-600/20 flex items-center space-x-2 w-fit shrink-0">
+                        <i class="fa-solid fa-plus text-[11px]"></i>
+                        <span>Tambah Regulasi</span>
+                    </a>
+                </div>
+
+                <!-- Container Khusus Filter di Atas List Data -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl p-5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div class="space-y-1.5">
+                            <label for="filterSearch" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Cari Kode / Judul
+                            </label>
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                                <input type="text" id="filterSearch" oninput="renderTable()" placeholder="Cari kode atau judul regulasi..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="filterJenis" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Jenis Regulasi
+                            </label>
+                            <select id="filterJenis" onchange="renderTable()" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                                <option value="">Semua Jenis</option>
+                                <option value="POJK">POJK</option>
+                                <option value="SEOJK">SEOJK</option>
+                                <option value="PBI">PBI</option>
+                                <option value="Internal">Internal</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="filterStatus" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Status
+                            </label>
+                            <select id="filterStatus" onchange="renderTable()" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                                <option value="">Semua Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Container List Data Tabel -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-[#131a29] border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    <th class="py-3.5 px-4">Kode Regulasi</th>
+                                    <th class="py-3.5 px-4">Judul Regulasi</th>
+                                    <th class="py-3.5 px-4">Jenis Regulasi</th>
+                                    <th class="py-3.5 px-4">Tanggal Ditetapkan</th>
+                                    <th class="py-3.5 px-4">Tanggal Berlaku</th>
+                                    <th class="py-3.5 px-4">Status</th>
+                                    <th class="py-3.5 px-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBodyRegulasi" class="divide-y divide-slate-800/70">
+                                <!-- Di-render otomatis oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal (2 level dari root folder) -->
+    <script src="../../sidebar.js"></script>
+
+    <!-- Script Render Tabel & Toggle Status Active / Inactive -->
+    <script>
+        const STORAGE_KEY = "ecompliance_regulasi_v1";
+
+        const defaultRegulasiList = [
+            {
+                id: 1,
+                kode: "REG-001",
+                judul: "Penerapan Tata Kelola Terintegrasi bagi Konglomerasi Keuangan",
+                jenis: "POJK",
+                tanggalDitetapkan: "2025-01-15",
+                tanggalBerlaku: "2025-02-01",
+                status: "Active"
+            },
+            {
+                id: 2,
+                kode: "REG-002",
+                judul: "Pelaporan Kepatuhan Berkala & Manajemen Risiko Operasional",
+                jenis: "SEOJK",
+                tanggalDitetapkan: "2025-03-10",
+                tanggalBerlaku: "2025-04-01",
+                status: "Active"
+            },
+            {
+                id: 3,
+                kode: "REG-003",
+                judul: "Kebijakan Internal Pengendalian Dokumen & Arsip Kepatuhan",
+                jenis: "Internal",
+                tanggalDitetapkan: "2024-06-20",
+                tanggalBerlaku: "2024-07-01",
+                status: "Inactive"
+            }
+        ];
+
+        function loadRegulasiData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultRegulasiList));
+                    return [...defaultRegulasiList];
+                }
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [...defaultRegulasiList];
+            } catch (e) {
+                return [...defaultRegulasiList];
+            }
+        }
+
+        function saveRegulasiData(list) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        }
+
+        function toggleStatusRegulasi(id) {
+            const list = loadRegulasiData();
+            const updated = list.map(item => {
+                if (Number(item.id) === Number(id)) {
+                    const nextStatus = item.status === "Active" ? "Inactive" : "Active";
+                    return { ...item, status: nextStatus };
+                }
+                return item;
+            });
+            saveRegulasiData(updated);
+            renderTable();
+        }
+
+        function deleteRegulasi(id) {
+            if (!confirm("Apakah Anda yakin ingin menghapus data regulasi ini?")) {
+                return;
+            }
+            const list = loadRegulasiData().filter(item => Number(item.id) !== Number(id));
+            saveRegulasiData(list);
+            renderTable();
+        }
+
+        function renderStatusBadge(status) {
+            if (status === "Active") {
+                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Active</span>`;
+            }
+            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-700/40 text-slate-400 border border-slate-600/40">Inactive</span>`;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("tableBodyRegulasi");
+            const keyword = (document.getElementById("filterSearch")?.value || "").trim().toLowerCase();
+            const jenisFilter = document.getElementById("filterJenis")?.value || "";
+            const statusFilter = document.getElementById("filterStatus")?.value || "";
+
+            const data = loadRegulasiData().filter(item => {
+                const matchKeyword =
+                    !keyword ||
+                    String(item.kode || "").toLowerCase().includes(keyword) ||
+                    String(item.judul || "").toLowerCase().includes(keyword);
+                const matchJenis = !jenisFilter || item.jenis === jenisFilter;
+                const matchStatus = !statusFilter || item.status === statusFilter;
+                return matchKeyword && matchJenis && matchStatus;
+            });
+
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-8 px-4 text-center text-slate-500">
+                            Tidak ada data regulasi yang sesuai dengan filter.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => {
+                const isActive = item.status === "Active";
+                const toggleBtnClass = isActive
+                    ? "bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border-amber-500/30"
+                    : "bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border-emerald-500/30";
+                const toggleIcon = isActive ? "fa-ban" : "fa-circle-check";
+                const toggleTooltip = isActive ? "Inactive" : "Active";
+
+                return `
+                    <tr class="hover:bg-slate-800/30 transition">
+                        <td class="py-3.5 px-4 font-semibold text-white whitespace-nowrap">${item.kode}</td>
+                        <td class="py-3.5 px-4 text-slate-200">${item.judul}</td>
+                        <td class="py-3.5 px-4 text-slate-300 whitespace-nowrap">${item.jenis}</td>
+                        <td class="py-3.5 px-4 text-slate-300 whitespace-nowrap">${item.tanggalDitetapkan || "-"}</td>
+                        <td class="py-3.5 px-4 text-slate-300 whitespace-nowrap">${item.tanggalBerlaku || "-"}</td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">${renderStatusBadge(item.status)}</td>
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                            <div class="inline-flex items-center justify-end space-x-1.5">
+                                <button type="button" onclick="toggleStatusRegulasi(${item.id})" class="group relative w-7 h-7 inline-flex items-center justify-center rounded-md border transition ${toggleBtnClass}" title="${toggleTooltip}" aria-label="${toggleTooltip}">
+                                    <i class="fa-solid ${toggleIcon} text-xs"></i>
+                                    <span class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-medium border border-slate-700 shadow-lg whitespace-nowrap z-20">${toggleTooltip}</span>
+                                </button>
+                                <a href="view-regulasi.html?id=${item.id}" class="group relative w-7 h-7 inline-flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/70 rounded-md transition" title="View" aria-label="View">
+                                    <i class="fa-solid fa-eye text-xs"></i>
+                                    <span class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-medium border border-slate-700 shadow-lg whitespace-nowrap z-20">View</span>
+                                </a>
+                                <a href="edit-regulasi.html?id=${item.id}" class="group relative w-7 h-7 inline-flex items-center justify-center bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 rounded-md transition" title="Edit" aria-label="Edit">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                    <span class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-medium border border-slate-700 shadow-lg whitespace-nowrap z-20">Edit</span>
+                                </a>
+                                <button type="button" onclick="deleteRegulasi(${item.id})" class="group relative w-7 h-7 inline-flex items-center justify-center bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 rounded-md transition" title="Delete" aria-label="Delete">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                    <span class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-medium border border-slate-700 shadow-lg whitespace-nowrap z-20">Delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", renderTable);
+    </script>
+</body>
+</html>

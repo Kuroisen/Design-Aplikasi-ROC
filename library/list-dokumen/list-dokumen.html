@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | List Dokumen</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm">
+                        <span class="text-slate-500">Library</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">List Dokumen</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace (Full Kiri Kanan dengan padding px-8) -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+                
+                <!-- Header Title -->
+                <div>
+                    <h2 class="text-xl font-bold text-white tracking-wide">List Dokumen</h2>
+                    <p class="text-xs text-slate-400 mt-1">Ringkasan jumlah regulasi, indikator, dan dokumen beserta daftar regulasi untuk membuka detail regulasi.</p>
+                </div>
+
+                <!-- 1. Informasi Jumlah Regulasi, Jumlah Indicator, dan Jumlah Dokumen -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Jumlah Regulasi</p>
+                            <p id="summaryJumlahRegulasi" class="text-2xl font-bold text-white mt-1.5">0</p>
+                        </div>
+                        <div class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                            <i class="fa-solid fa-scale-balanced text-base"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Jumlah Indicator</p>
+                            <p id="summaryJumlahIndicator" class="text-2xl font-bold text-emerald-400 mt-1.5">0</p>
+                        </div>
+                        <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                            <i class="fa-solid fa-chart-pie text-base"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Jumlah Dokumen</p>
+                            <p id="summaryJumlahDokumen" class="text-2xl font-bold text-indigo-400 mt-1.5">0</p>
+                        </div>
+                        <div class="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                            <i class="fa-solid fa-file-lines text-base"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fitur Pencarian Regulasi -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl">
+                    <label for="searchRegulasi" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                        Pencarian Regulasi
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-2.5 text-xs text-slate-500">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input
+                            type="text"
+                            id="searchRegulasi"
+                            oninput="renderRegulasiCards()"
+                            placeholder="Cari berdasarkan nomor regulasi, nama regulasi, atau kriteria penilaian..."
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                    </div>
+                </div>
+
+                <!-- 2. Daftar Card Regulasi (1 Card per Baris, Berdempetan) -->
+                <div id="regulasiCardGrid" class="grid grid-cols-1 gap-0 bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <!-- Di-render otomatis oleh JavaScript -->
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../sidebar.js"></script>
+
+    <!-- Script Ringkasan, Pencarian & Render Card Regulasi -->
+    <script>
+        const regulasiDokumenList = [
+            {
+                id: 1,
+                nomorRegulasi: "POJK/No.12/2026",
+                namaRegulasi: "Penerapan Manajemen Risiko dan Pelaporan Berkala Sektor Jasa Keuangan",
+                kriteriaPenilaian: "Ketersediaan kebijakan manajemen risiko, ketepatan waktu penyampaian laporan berkala, serta pemenuhan batas minimum profil risiko.",
+                totalIndikator: 4,
+                totalDokumen: 9
+            },
+            {
+                id: 2,
+                nomorRegulasi: "SE-BI/24/DKMP",
+                namaRegulasi: "Ketentuan Pelaporan Lalu Lintas Devisa dan Pemantauan Kepatuhan",
+                kriteriaPenilaian: "Kelengkapan dokumen pendukung transaksi devisa, akurasi data pelaporan, serta ketepatan periode pelaporan kepada otoritas.",
+                totalIndikator: 3,
+                totalDokumen: 6
+            },
+            {
+                id: 3,
+                nomorRegulasi: "POJK/No.05/2026",
+                namaRegulasi: "Tata Kelola Terintegrasi dan Pengendalian Internal Bank Umum",
+                kriteriaPenilaian: "Pelaksanaan fungsi kepatuhan dan audit internal, dokumentasi risalah komite, serta tindak lanjut rekomendasi pengawasan.",
+                totalIndikator: 5,
+                totalDokumen: 11
+            },
+            {
+                id: 4,
+                nomorRegulasi: "SK-DIR/014/2026",
+                namaRegulasi: "Kebijakan Internal Pengelolaan Arsip Dokumen & Bukti Kepatuhan",
+                kriteriaPenilaian: "Standar penamaan dan pengarsipan dokumen bukti (evidence), retensi arsip, serta keterlacakan dokumen pada tiap indikator.",
+                totalIndikator: 2,
+                totalDokumen: 5
+            }
+        ];
+
+        function updateSummaryCounts() {
+            const jumlahRegulasi = regulasiDokumenList.length;
+            const jumlahIndicator = regulasiDokumenList.reduce((acc, item) => acc + (Number(item.totalIndikator) || 0), 0);
+            const jumlahDokumen = regulasiDokumenList.reduce((acc, item) => acc + (Number(item.totalDokumen) || 0), 0);
+
+            document.getElementById("summaryJumlahRegulasi").textContent = jumlahRegulasi;
+            document.getElementById("summaryJumlahIndicator").textContent = jumlahIndicator;
+            document.getElementById("summaryJumlahDokumen").textContent = jumlahDokumen;
+        }
+
+        function renderRegulasiCards() {
+            const grid = document.getElementById("regulasiCardGrid");
+            const keyword = (document.getElementById("searchRegulasi")?.value || "").trim().toLowerCase();
+
+            const filtered = regulasiDokumenList.filter(item => {
+                if (!keyword) return true;
+                return (
+                    String(item.nomorRegulasi || "").toLowerCase().includes(keyword) ||
+                    String(item.namaRegulasi || "").toLowerCase().includes(keyword) ||
+                    String(item.kriteriaPenilaian || "").toLowerCase().includes(keyword)
+                );
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="p-8 text-center text-xs text-slate-500">
+                        Tidak ada regulasi yang sesuai dengan kata kunci pencarian.
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map((item, idx) => `
+                <div class="${idx > 0 ? 'border-t border-slate-800/90' : ''} hover:bg-[#131a29]/50 transition w-full">
+                    <div class="p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+                        <div class="space-y-1.5 flex-1 min-w-0">
+                            <p class="text-xs font-semibold text-blue-400">${item.nomorRegulasi}</p>
+                            <h3 class="text-sm font-bold text-white leading-snug">${item.namaRegulasi}</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed pt-0.5">${item.kriteriaPenilaian}</p>
+                            <div class="flex flex-wrap items-center gap-5 text-xs pt-1">
+                                <span class="text-emerald-400 font-semibold whitespace-nowrap">Total Indikator: ${item.totalIndikator}</span>
+                                <span class="text-indigo-400 font-semibold whitespace-nowrap">Total Dokumen: ${item.totalDokumen}</span>
+                            </div>
+                        </div>
+
+                        <a href="detail-dokumen-regulasi.html?kode=${encodeURIComponent(item.nomorRegulasi)}&nama=${encodeURIComponent(item.namaRegulasi)}" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-blue-600/20 inline-flex items-center justify-center space-x-2 shrink-0 self-start lg:self-center">
+                            <i class="fa-solid fa-folder-open text-[11px]"></i>
+                            <span>Detail Regulasi</span>
+                        </a>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateSummaryCounts();
+            renderRegulasiCards();
+        });
+    </script>
+</body>
+</html>

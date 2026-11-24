@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Self-Assessment</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container" class="shrink-0"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">Self-Assessment</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="text-slate-500">ROC</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Self Assessment</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+                
+                <!-- Page Header & Tombol Tambah ROC -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-wide">Self-Assessment ROC</h2>
+                        <p class="text-xs text-slate-400 mt-1">Kelola penilaian mandiri (self-assessment), pantau jumlah indikator, progress penyelesaian, nilai kompetensi, serta tanggal pembuatan per unit.</p>
+                    </div>
+                    <a
+                        href="tambah-ROC.html"
+                        class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold transition shadow-lg shadow-blue-600/20 inline-flex items-center space-x-2 w-fit shrink-0"
+                    >
+                        <i class="fa-solid fa-plus text-[11px]"></i>
+                        <span>Tambah ROC</span>
+                    </a>
+                </div>
+
+                <!-- Filter & Pencarian Data -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        <!-- Pencarian Data -->
+                        <div class="md:col-span-5">
+                            <label for="searchRoc" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-magnifying-glass text-blue-400 text-[11px]"></i>
+                                <span>Pencarian Data</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-2.5 text-xs text-slate-500">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    id="searchRoc"
+                                    oninput="renderRocTable()"
+                                    placeholder="Cari unit, nilai kompetensi, atau tanggal..."
+                                    class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Filter Tahun -->
+                        <div class="md:col-span-2">
+                            <label for="filterTahun" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-calendar text-indigo-400 text-[11px]"></i>
+                                <span>Filter Tahun</span>
+                            </label>
+                            <select
+                                id="filterTahun"
+                                onchange="renderRocTable()"
+                                class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                            >
+                                <option value="">Semua Tahun</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Periode -->
+                        <div class="md:col-span-2">
+                            <label for="filterPeriode" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-clock-rotate-left text-amber-400 text-[11px]"></i>
+                                <span>Filter Periode</span>
+                            </label>
+                            <select
+                                id="filterPeriode"
+                                onchange="renderRocTable()"
+                                class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                            >
+                                <option value="">Semua Periode</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Unit -->
+                        <div class="md:col-span-3">
+                            <label for="filterUnit" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-building text-emerald-400 text-[11px]"></i>
+                                <span>Filter Unit</span>
+                            </label>
+                            <select
+                                id="filterUnit"
+                                onchange="renderRocTable()"
+                                class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                            >
+                                <option value="">Semua Unit</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabel Self-Assessment -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between gap-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-table-list text-blue-500 text-sm"></i>
+                            <h3 class="text-sm font-semibold text-white tracking-wide">Daftar Self-Assessment ROC</h3>
+                        </div>
+                        <span id="totalRocCount" class="text-xs text-slate-400">0 Data</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800/90 bg-[#101624] text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                    <th class="py-3.5 px-6">Unit</th>
+                                    <th class="py-3.5 px-6 text-center">Tahun</th>
+                                    <th class="py-3.5 px-6 text-center">Periode</th>
+                                    <th class="py-3.5 px-6">Jumlah Indikator</th>
+                                    <th class="py-3.5 px-6 w-72">Progress</th>
+                                    <th class="py-3.5 px-6 text-center">Nilai Kompetensi</th>
+                                    <th class="py-3.5 px-6">Tanggal Pembuatan</th>
+                                    <th class="py-3.5 px-6 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rocTableBody" class="divide-y divide-slate-800/80 text-xs">
+                                <!-- Di-render otomatis oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Modal Edit ROC -->
+    <div id="rocFormModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-md p-6 shadow-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="rocFormModalTitle" class="text-sm font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                    <span>Edit ROC</span>
+                </h3>
+                <button type="button" onclick="closeRocFormModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="formRoc" onsubmit="handleSaveRoc(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="editRocId">
+
+                <div class="space-y-1.5">
+                    <label for="inputUnitRoc" class="block font-semibold text-slate-300">Unit</label>
+                    <input
+                        type="text"
+                        id="inputUnitRoc"
+                        required
+                        placeholder="Contoh: Satuan Kerja Manajemen Risiko (SKMR)"
+                        class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                    >
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputJumlahIndikator" class="block font-semibold text-slate-300">Jumlah Indikator</label>
+                    <input
+                        type="number"
+                        id="inputJumlahIndikator"
+                        min="1"
+                        required
+                        placeholder="Contoh: 12"
+                        class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                    >
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label for="inputProgressRoc" class="block font-semibold text-slate-300">Progress (%)</label>
+                        <input
+                            type="number"
+                            id="inputProgressRoc"
+                            min="0"
+                            max="100"
+                            required
+                            placeholder="0 - 100"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="inputNilaiKompetensi" class="block font-semibold text-slate-300">Nilai Kompetensi</label>
+                        <input
+                            type="number"
+                            id="inputNilaiKompetensi"
+                            min="0"
+                            max="100"
+                            step="1"
+                            placeholder="Kosongkan jika On Review"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                        <p class="text-[10px] text-slate-400">Biarkan kosong apabila belum dinilai / dalam proses review.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputTanggalPembuatan" class="block font-semibold text-slate-300">Tanggal Pembuatan</label>
+                    <input
+                        type="date"
+                        id="inputTanggalPembuatan"
+                        required
+                        class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                    >
+                </div>
+
+                <div class="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-800">
+                    <button type="button" onclick="closeRocFormModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium transition">
+                        Batal
+                    </button>
+                    <button type="submit" id="btnSubmitRoc" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition shadow-lg shadow-blue-600/20">
+                        Update ROC
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal View Detail ROC -->
+    <div id="viewRocModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-eye text-blue-400"></i>
+                    <span>Detail Self-Assessment ROC</span>
+                </h3>
+                <button type="button" onclick="closeViewRocModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="viewRocModalBody" class="space-y-3 text-xs text-slate-300">
+                <!-- Diisi oleh JavaScript -->
+            </div>
+            <div class="flex items-center justify-end pt-3 border-t border-slate-800">
+                <button type="button" onclick="closeViewRocModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Delete ROC -->
+    <div id="deleteRocModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+            <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                <div class="w-9 h-9 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-white">Hapus Data ROC</h3>
+                    <p class="text-[11px] text-slate-400">Tindakan ini akan menghapus data dari daftar.</p>
+                </div>
+            </div>
+            <p id="deleteRocMessage" class="text-xs text-slate-300 leading-relaxed"></p>
+            <div class="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-800">
+                <button type="button" onclick="closeDeleteRocModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition">
+                    Batal
+                </button>
+                <button type="button" onclick="confirmDeleteRoc()" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold transition">
+                    Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../sidebar.js"></script>
+
+    <!-- Script Self-Assessment -->
+    <script>
+        const bulanSingkat = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+        let rocDataset = [
+            {
+                id: "ROC-01",
+                unit: "Satuan Kerja Manajemen Risiko (SKMR)",
+                tahun: "2026",
+                periode: "Q1",
+                jumlahIndikator: 18,
+                progress: 100,
+                nilaiKompetensi: 92,
+                tanggalIso: "2026-11-10",
+                tanggalPembuatan: "10 Nov 2026"
+            },
+            {
+                id: "ROC-02",
+                unit: "Satuan Kerja Kepatuhan (SKK)",
+                tahun: "2026",
+                periode: "Q1",
+                jumlahIndikator: 14,
+                progress: 75,
+                nilaiKompetensi: null,
+                tanggalIso: "2026-11-12",
+                tanggalPembuatan: "12 Nov 2026"
+            },
+            {
+                id: "ROC-03",
+                unit: "Audit Internal (SKAI)",
+                tahun: "2026",
+                periode: "Q1",
+                jumlahIndikator: 10,
+                progress: 40,
+                nilaiKompetensi: null,
+                tanggalIso: "2026-11-15",
+                tanggalPembuatan: "15 Nov 2026"
+            },
+            {
+                id: "ROC-04",
+                unit: "Divisi Operasional & Layanan",
+                tahun: "2025",
+                periode: "Q1",
+                jumlahIndikator: 16,
+                progress: 100,
+                nilaiKompetensi: null,
+                tanggalIso: "2026-11-18",
+                tanggalPembuatan: "18 Nov 2026"
+            }
+        ];
+
+        let openActionMenuId = null;
+        let pendingDeleteId = null;
+
+        function formatTanggalIndo(dateStr) {
+            if (!dateStr) return "";
+            const parts = dateStr.split("-");
+            if (parts.length !== 3) return dateStr;
+            const tahun = parts[0];
+            const idxBulan = parseInt(parts[1], 10) - 1;
+            const hari = parseInt(parts[2], 10);
+            return `${hari} ${bulanSingkat[idxBulan] || parts[1]} ${tahun}`;
+        }
+
+        function hasNilaiKompetensi(item) {
+            return item.nilaiKompetensi !== null && item.nilaiKompetensi !== undefined && String(item.nilaiKompetensi).trim() !== "";
+        }
+
+        function formatBilanganBulat(val) {
+            const num = Number(val);
+            if (isNaN(num)) return "0";
+            return String(Math.round(num));
+        }
+
+        function populateFilters() {
+            const tahunSelect = document.getElementById("filterTahun");
+            const periodeSelect = document.getElementById("filterPeriode");
+            const unitSelect = document.getElementById("filterUnit");
+
+            const currentTahun = tahunSelect ? tahunSelect.value : "";
+            const currentPeriode = periodeSelect ? periodeSelect.value : "";
+            const currentUnit = unitSelect ? unitSelect.value : "";
+
+            const tahuns = [...new Set(rocDataset.map(item => item.tahun || (item.tanggalIso ? item.tanggalIso.slice(0, 4) : "")).filter(Boolean))].sort().reverse();
+            const periodes = [...new Set(rocDataset.map(item => item.periode).filter(Boolean))];
+            const units = [...new Set(rocDataset.map(item => item.unit).filter(Boolean))];
+
+            if (tahunSelect) {
+                tahunSelect.innerHTML = `<option value="">Semua Tahun</option>` + tahuns.map(t =>
+                    `<option value="${t}">${t}</option>`
+                ).join("");
+                if (tahuns.includes(currentTahun)) tahunSelect.value = currentTahun;
+            }
+
+            if (periodeSelect) {
+                periodeSelect.innerHTML = `<option value="">Semua Periode</option>` + periodes.map(p =>
+                    `<option value="${p}">${p}</option>`
+                ).join("");
+                if (periodes.includes(currentPeriode)) periodeSelect.value = currentPeriode;
+            }
+
+            if (unitSelect) {
+                unitSelect.innerHTML = `<option value="">Semua Unit</option>` + units.map(unit =>
+                    `<option value="${unit}">${unit}</option>`
+                ).join("");
+                if (units.includes(currentUnit)) unitSelect.value = currentUnit;
+            }
+        }
+
+        function getProgressBarColor(progress) {
+            if (progress >= 100) return "bg-emerald-500";
+            if (progress >= 50) return "bg-blue-500";
+            if (progress > 0) return "bg-amber-400";
+            return "bg-slate-600";
+        }
+
+        function getProgressTextColor(progress) {
+            if (progress >= 100) return "text-emerald-400";
+            if (progress >= 50) return "text-blue-400";
+            if (progress > 0) return "text-amber-400";
+            return "text-slate-400";
+        }
+
+        function renderKompetensiCell(item) {
+            if (hasNilaiKompetensi(item)) {
+                const scoreInt = formatBilanganBulat(item.nilaiKompetensi);
+                return `
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                        ${scoreInt}
+                    </span>
+                `;
+            }
+
+            return `
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                    On Review
+                </span>
+            `;
+        }
+
+        function toggleActionMenu(id, event) {
+            event.stopPropagation();
+            openActionMenuId = openActionMenuId === id ? null : id;
+            renderRocTable();
+        }
+
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest("[data-action-menu-wrapper]")) {
+                if (openActionMenuId !== null) {
+                    openActionMenuId = null;
+                    renderRocTable();
+                }
+            }
+        });
+
+        function renderRocTable() {
+            const tbody = document.getElementById("rocTableBody");
+            const countEl = document.getElementById("totalRocCount");
+            const keyword = (document.getElementById("searchRoc")?.value || "").trim().toLowerCase();
+            const selectedTahun = document.getElementById("filterTahun")?.value || "";
+            const selectedPeriode = document.getElementById("filterPeriode")?.value || "";
+            const selectedUnit = document.getElementById("filterUnit")?.value || "";
+
+            const filtered = rocDataset.filter(item => {
+                const assessed = hasNilaiKompetensi(item);
+                const kompetensiLabel = assessed ? formatBilanganBulat(item.nilaiKompetensi).toLowerCase() : "on review";
+                const itemTahun = String(item.tahun || (item.tanggalIso ? item.tanggalIso.slice(0, 4) : ""));
+                const itemPeriode = String(item.periode || "");
+
+                const matchKeyword = !keyword ||
+                    String(item.unit || "").toLowerCase().includes(keyword) ||
+                    String(item.tanggalPembuatan || "").toLowerCase().includes(keyword) ||
+                    kompetensiLabel.includes(keyword);
+
+                const matchTahun = !selectedTahun || itemTahun === selectedTahun;
+                const matchPeriode = !selectedPeriode || itemPeriode === selectedPeriode;
+                const matchUnit = !selectedUnit || item.unit === selectedUnit;
+
+                return matchKeyword && matchTahun && matchPeriode && matchUnit;
+            });
+
+            countEl.textContent = `${filtered.length} Data`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="py-8 px-6 text-center text-slate-500">
+                            Tidak ada data self-assessment ROC yang sesuai dengan filter atau pencarian.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const pct = Math.max(0, Math.min(100, Number(item.progress) || 0));
+                const barColor = getProgressBarColor(pct);
+                const textColor = getProgressTextColor(pct);
+                const assessmentUrl = `tambah-assessment.html?id=${encodeURIComponent(item.id)}&unit=${encodeURIComponent(item.unit)}`;
+                const isMenuOpen = openActionMenuId === item.id;
+
+                const itemTahun = String(item.tahun || (item.tanggalIso ? item.tanggalIso.slice(0, 4) : "-"));
+                const itemPeriode = String(item.periode || "-");
+
+                return `
+                    <tr class="hover:bg-[#131a29]/60 transition">
+                        <td class="py-4 px-6 font-semibold text-white">${item.unit}</td>
+                        <td class="py-4 px-6 text-center text-slate-200 font-medium whitespace-nowrap">${itemTahun}</td>
+                        <td class="py-4 px-6 text-center whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                                ${itemPeriode}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 font-semibold text-blue-400">${item.jumlahIndikator}</td>
+                        <td class="py-4 px-6">
+                            <div class="space-y-1.5">
+                                <div class="flex items-center justify-between text-[11px] font-semibold">
+                                    <span class="text-slate-400">Penyelesaian</span>
+                                    <span class="${textColor}">${pct}%</span>
+                                </div>
+                                <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60">
+                                    <div class="${barColor} h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 text-center">${renderKompetensiCell(item)}</td>
+                        <td class="py-4 px-6 text-slate-300">${item.tanggalPembuatan}</td>
+                        <td class="py-4 px-6 text-center">
+                            <div class="relative inline-block text-left" data-action-menu-wrapper>
+                                <button
+                                    type="button"
+                                    onclick="toggleActionMenu('${item.id}', event)"
+                                    title="Pilihan Aksi"
+                                    aria-label="Pilihan Aksi"
+                                    class="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition inline-flex items-center justify-center w-8 h-8"
+                                >
+                                    <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+                                </button>
+
+                                ${isMenuOpen ? `
+                                    <div class="origin-top-right absolute right-0 mt-1.5 w-44 rounded-xl bg-[#131a29] border border-slate-700/80 shadow-2xl z-30 py-1.5 text-xs">
+                                        <a
+                                            href="${assessmentUrl}"
+                                            class="w-full px-3.5 py-2 text-left text-slate-200 hover:bg-slate-800/90 hover:text-emerald-400 flex items-center space-x-2.5 transition"
+                                        >
+                                            <i class="fa-solid fa-clipboard-check text-emerald-400 w-4 text-center"></i>
+                                            <span>Self-Assessment</span>
+                                        </a>
+                                        <button
+                                            type="button"
+                                            onclick="openViewRocModal('${item.id}'); openActionMenuId = null;"
+                                            class="w-full px-3.5 py-2 text-left text-slate-200 hover:bg-slate-800/90 hover:text-blue-400 flex items-center space-x-2.5 transition"
+                                        >
+                                            <i class="fa-solid fa-eye text-blue-400 w-4 text-center"></i>
+                                            <span>View</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onclick="openEditRocModal('${item.id}'); openActionMenuId = null;"
+                                            class="w-full px-3.5 py-2 text-left text-slate-200 hover:bg-slate-800/90 hover:text-amber-400 flex items-center space-x-2.5 transition"
+                                        >
+                                            <i class="fa-solid fa-pen-to-square text-amber-400 w-4 text-center"></i>
+                                            <span>Edit</span>
+                                        </button>
+                                        <div class="my-1 border-t border-slate-800"></div>
+                                        <button
+                                            type="button"
+                                            onclick="openDeleteRocModal('${item.id}'); openActionMenuId = null;"
+                                            class="w-full px-3.5 py-2 text-left text-rose-400 hover:bg-rose-500/15 flex items-center space-x-2.5 transition"
+                                        >
+                                            <i class="fa-solid fa-trash-can text-rose-400 w-4 text-center"></i>
+                                            <span>Delete</span>
+                                        </button>
+                                    </div>
+                                ` : ""}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        function openEditRocModal(id) {
+            const item = rocDataset.find(row => row.id === id);
+            if (!item) return;
+
+            document.getElementById("editRocId").value = item.id;
+            document.getElementById("inputUnitRoc").value = item.unit;
+            document.getElementById("inputJumlahIndikator").value = item.jumlahIndikator;
+            document.getElementById("inputProgressRoc").value = item.progress;
+            document.getElementById("inputNilaiKompetensi").value = hasNilaiKompetensi(item)
+                ? formatBilanganBulat(item.nilaiKompetensi)
+                : "";
+            document.getElementById("inputTanggalPembuatan").value = item.tanggalIso || new Date().toISOString().split("T")[0];
+
+            document.getElementById("rocFormModalTitle").innerHTML = `
+                <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                <span>Edit ROC</span>
+            `;
+            document.getElementById("btnSubmitRoc").textContent = "Update ROC";
+            document.getElementById("rocFormModal").classList.remove("hidden");
+        }
+
+        function closeRocFormModal() {
+            document.getElementById("rocFormModal").classList.add("hidden");
+        }
+
+        function handleSaveRoc(event) {
+            event.preventDefault();
+            const editId = document.getElementById("editRocId").value;
+            const unit = document.getElementById("inputUnitRoc").value.trim();
+            const jumlahIndikator = parseInt(document.getElementById("inputJumlahIndikator").value, 10);
+            const progress = Math.max(0, Math.min(100, Math.round(parseFloat(document.getElementById("inputProgressRoc").value) || 0)));
+            const rawScoreStr = document.getElementById("inputNilaiKompetensi").value.trim();
+            let nilaiKompetensi = null;
+            if (rawScoreStr !== "") {
+                const parsedScore = parseInt(rawScoreStr, 10);
+                if (!isNaN(parsedScore)) {
+                    nilaiKompetensi = Math.max(0, Math.min(100, Math.round(parsedScore)));
+                }
+            }
+            const tanggalIso = document.getElementById("inputTanggalPembuatan").value;
+
+            if (!unit || isNaN(jumlahIndikator) || !editId) return;
+
+            const idx = rocDataset.findIndex(row => row.id === editId);
+            if (idx !== -1) {
+                rocDataset[idx] = {
+                    ...rocDataset[idx],
+                    unit,
+                    jumlahIndikator,
+                    progress,
+                    nilaiKompetensi,
+                    tanggalIso,
+                    tanggalPembuatan: formatTanggalIndo(tanggalIso)
+                };
+            }
+
+            populateFilters();
+            renderRocTable();
+            closeRocFormModal();
+        }
+
+        function openViewRocModal(id) {
+            const item = rocDataset.find(row => row.id === id);
+            if (!item) return;
+
+            const pct = Math.max(0, Math.min(100, Number(item.progress) || 0));
+            const barColor = getProgressBarColor(pct);
+            const textColor = getProgressTextColor(pct);
+            const kompetensiHtml = hasNilaiKompetensi(item)
+                ? `<strong class="text-emerald-400">${formatBilanganBulat(item.nilaiKompetensi)}</strong>`
+                : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">On Review</span>`;
+
+            document.getElementById("viewRocModalBody").innerHTML = `
+                <p><span class="text-slate-400">ID:</span> <strong class="text-blue-400">${item.id}</strong></p>
+                <p><span class="text-slate-400">Unit:</span> <strong class="text-white">${item.unit}</strong></p>
+                <p><span class="text-slate-400">Jumlah Indikator:</span> <strong class="text-blue-400">${item.jumlahIndikator}</strong></p>
+                <div class="space-y-1.5 pt-1">
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-slate-400">Progress:</span>
+                        <strong class="${textColor}">${pct}%</strong>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60">
+                        <div class="${barColor} h-full rounded-full" style="width: ${pct}%"></div>
+                    </div>
+                </div>
+                <p class="pt-1"><span class="text-slate-400">Nilai Kompetensi:</span> ${kompetensiHtml}</p>
+                <p class="pt-1"><span class="text-slate-400">Tanggal Pembuatan:</span> <strong class="text-slate-200">${item.tanggalPembuatan}</strong></p>
+            `;
+            document.getElementById("viewRocModal").classList.remove("hidden");
+        }
+
+        function closeViewRocModal() {
+            document.getElementById("viewRocModal").classList.add("hidden");
+        }
+
+        function openDeleteRocModal(id) {
+            const item = rocDataset.find(row => row.id === id);
+            if (!item) return;
+            pendingDeleteId = id;
+            document.getElementById("deleteRocMessage").innerHTML = `Apakah Anda yakin ingin menghapus data ROC untuk unit <strong class="text-white">${item.unit}</strong>?`;
+            document.getElementById("deleteRocModal").classList.remove("hidden");
+        }
+
+        function closeDeleteRocModal() {
+            pendingDeleteId = null;
+            document.getElementById("deleteRocModal").classList.add("hidden");
+        }
+
+        function confirmDeleteRoc() {
+            if (!pendingDeleteId) return;
+            rocDataset = rocDataset.filter(row => row.id !== pendingDeleteId);
+            populateFilters();
+            renderRocTable();
+            closeDeleteRocModal();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            populateFilters();
+            renderRocTable();
+        });
+    </script>
+</body>
+</html>

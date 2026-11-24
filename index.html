@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container" class="shrink-0"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">e-Compliance</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Dashboard</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span id="headerPeriodeBadge" class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-semibold bg-blue-500/10 text-blue-300 border border-blue-500/30">
+                        Periode 2026 • Q1
+                    </span>
+                    <span class="hidden lg:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+
+                <!-- Page Header & Filter Periode -->
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-wide">Dashboard Kepatuhan</h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Ringkasan jumlah dokumen tahun ini, antrean review, temuan (finding), nilai kepatuhan menyeluruh, dan peringkat unit.
+                        </p>
+                    </div>
+
+                    <!-- Filter Tahun & Periode -->
+                    <div class="flex flex-wrap items-center gap-3 text-xs">
+                        <div class="flex items-center space-x-2 bg-[#0b0f19] border border-slate-800 rounded-lg px-3 py-2">
+                            <span class="text-slate-400">Tahun:</span>
+                            <select
+                                id="filterTahun"
+                                onchange="renderDashboard()"
+                                class="bg-transparent text-white font-semibold focus:outline-none cursor-pointer"
+                            >
+                                <option value="2026" class="bg-[#0b0f19]">2026</option>
+                                <option value="2025" class="bg-[#0b0f19]">2025</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-center space-x-2 bg-[#0b0f19] border border-slate-800 rounded-lg px-3 py-2">
+                            <span class="text-slate-400">Periode:</span>
+                            <select
+                                id="filterPeriode"
+                                onchange="renderDashboard()"
+                                class="bg-transparent text-white font-semibold focus:outline-none cursor-pointer"
+                            >
+                                <option value="Q1" class="bg-[#0b0f19]">Q1</option>
+                                <option value="Q2" class="bg-[#0b0f19]">Q2</option>
+                                <option value="Q3" class="bg-[#0b0f19]">Q3</option>
+                                <option value="Q4" class="bg-[#0b0f19]">Q4</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 Kartu Ringkasan KPI -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                    <!-- KPI 1: Jumlah Dokumen Tahun Ini (Tanpa Progress Bar) -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <span id="kpiLabelDokumenTahun" class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 leading-snug">Jumlah Dokumen Terverifikasi Tahun Ini</span>
+                            <div class="w-9 h-9 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+                                <i class="fa-solid fa-folder-open text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <strong id="kpiJumlahDokumenTahun" class="text-2xl font-bold text-white">0</strong>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Akumulasi dokumen kepatuhan yang telah terverifikasi pada tahun berjalan.</p>
+                    </div>
+
+                    <!-- KPI 2: Perlu Review -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Perlu Review</span>
+                            <div class="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                                <i class="fa-solid fa-magnifying-glass-chart text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <strong id="kpiPerluReview" class="text-2xl font-bold text-amber-300">0</strong>
+                            <span class="text-[11px] text-slate-400">Menunggu verifikasi</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Dokumen & nilai sub indikator siap direview.</p>
+                    </div>
+
+                    <!-- KPI 3: Disetujui -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Disetujui</span>
+                            <div class="w-9 h-9 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                <i class="fa-solid fa-circle-check text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <strong id="kpiDisetujui" class="text-2xl font-bold text-emerald-300">0</strong>
+                            <span class="text-[11px] text-slate-400">Approved</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Telah memenuhi kriteria kepatuhan periode ini.</p>
+                    </div>
+
+                    <!-- KPI 4: Total Finding -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Finding</span>
+                            <div class="w-9 h-9 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                                <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <strong id="kpiTotalFinding" class="text-2xl font-bold text-rose-300">0</strong>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Memerlukan rencana & tindak lanjut perbaikan.</p>
+                    </div>
+                </div>
+
+                <!-- Nilai Kepatuhan Seluruhnya (Regulasi, Finding, Total Regulasi + Finding, Kategori Kepatuhan) -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-award text-blue-400 text-sm"></i>
+                            <h3 class="text-sm font-semibold text-white">Nilai Kepatuhan Seluruhnya</h3>
+                        </div>
+                        <span id="kategoriKepatuhanBadge" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border w-fit">
+                            Kategori: -
+                        </span>
+                    </div>
+
+                    <div class="p-6 space-y-6 text-xs">
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                            <!-- Nilai Kepatuhan Regulasi -->
+                            <div class="bg-[#131a29]/80 border border-slate-800 rounded-xl p-4 space-y-1.5">
+                                <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Nilai Kepatuhan Regulasi</span>
+                                <strong id="nilaiRegulasi" class="text-2xl font-bold text-blue-400 block">0.00</strong>
+                                <span class="text-[11px] text-slate-500">Skor pemenuhan regulasi & sub indikator</span>
+                            </div>
+
+                            <!-- Nilai Kepatuhan Finding -->
+                            <div class="bg-[#131a29]/80 border border-slate-800 rounded-xl p-4 space-y-1.5">
+                                <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Nilai Kepatuhan Finding</span>
+                                <strong id="nilaiFinding" class="text-2xl font-bold text-amber-300 block">0.00</strong>
+                                <span class="text-[11px] text-slate-500">Penyesuaian / dampak temuan audit</span>
+                            </div>
+
+                            <!-- Total Nilai (Regulasi + Finding) -->
+                            <div class="bg-[#131a29]/80 border border-slate-800 rounded-xl p-4 space-y-1.5">
+                                <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total (Regulasi + Finding)</span>
+                                <strong id="totalNilaiKepatuhan" class="text-2xl font-bold text-white block">0.00</strong>
+                                <span class="text-[11px] text-slate-500">Akumulasi nilai regulasi dan finding</span>
+                            </div>
+
+                            <!-- Kategori Kepatuhan -->
+                            <div class="bg-[#131a29]/80 border border-slate-800 rounded-xl p-4 space-y-1.5">
+                                <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Kategori Kepatuhan</span>
+                                <strong id="teksKategoriKepatuhan" class="text-xl font-bold text-emerald-300 block">-</strong>
+                                <span id="deskripsiKategoriKepatuhan" class="text-[11px] text-slate-400 block leading-relaxed">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Visual Total Nilai Kepatuhan -->
+                        <div class="space-y-2 pt-2 border-t border-slate-800/80">
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="text-slate-400 font-medium">Indeks Total Kepatuhan (Regulasi + Finding)</span>
+                                <span id="persentaseTotalNilai" class="font-semibold text-white">0%</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                                <div id="barTotalNilaiKepatuhan" class="h-full bg-gradient-to-r from-blue-500 via-indigo-400 to-emerald-400 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2 Container dalam 1 Baris: Kiri Diagram Batang Total Nilai Kepatuhan (Tahun Ini & 3 Tahun Kebelakang) & Kanan Top 5 Unit Nilai Keseluruhan -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Container Kiri: Total Nilai Kepatuhan Tahun Saat Ini & 3 Tahun Kebelakang (Diagram Batang) -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden flex flex-col">
+                        <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-2 min-w-0">
+                                <i class="fa-solid fa-chart-column text-blue-400 text-sm shrink-0"></i>
+                                <h3 id="titleTrendKepatuhan4Tahun" class="text-sm font-semibold text-white truncate">Total Nilai Kepatuhan (2023 - 2026)</h3>
+                            </div>
+                            <span id="subtitleTrendKepatuhan4Tahun" class="text-[11px] text-slate-400 shrink-0">Tahun Ini &amp; 3 Tahun Kebelakang</span>
+                        </div>
+
+                        <div id="trendKepatuhan4TahunChart" class="p-6 flex-1 flex flex-col justify-between text-xs">
+                            <!-- Di-render oleh JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Container Kanan: Top 5 Unit Nilai Keseluruhan -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden flex flex-col">
+                        <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-2 min-w-0">
+                                <i class="fa-solid fa-ranking-star text-emerald-400 text-sm shrink-0"></i>
+                                <h3 class="text-sm font-semibold text-white truncate">Top 5 Unit Nilai Keseluruhan</h3>
+                            </div>
+                            <span class="text-[11px] text-slate-400 shrink-0">Nilai Keseluruhan</span>
+                        </div>
+
+                        <div id="top5TotalUnitList" class="p-6 space-y-4 text-xs flex-1">
+                            <!-- Di-render oleh JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2 Container dalam 1 Baris: Kiri Top 5 Unit Nilai Regulasi Tertinggi & Kanan Top 5 Unit Nilai Finding Tertinggi -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Container Kiri: Top 5 Unit Nilai Regulasi Tertinggi -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                        <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-scale-balanced text-blue-400 text-sm"></i>
+                                <h3 class="text-sm font-semibold text-white">Top 5 Unit Nilai Regulasi Tertinggi</h3>
+                            </div>
+                            <span class="text-[11px] text-slate-400 shrink-0">Sub Indikator</span>
+                        </div>
+
+                        <div id="top5RegulasiUnitList" class="p-6 space-y-4 text-xs">
+                            <!-- Di-render oleh JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Container Kanan: Top 5 Unit Nilai Finding Tertinggi -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                        <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-fire text-rose-400 text-sm"></i>
+                                <h3 class="text-sm font-semibold text-white">Top 5 Unit Nilai Finding Tertinggi</h3>
+                            </div>
+                            <span class="text-[11px] text-slate-400 shrink-0">Tertinggi ke Terendah</span>
+                        </div>
+
+                        <div id="top5FindingUnitList" class="p-6 space-y-4 text-xs">
+                            <!-- Di-render oleh JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="sidebar.js"></script>
+
+    <!-- Script Dashboard -->
+    <script>
+        const dashboardData = {
+            "2026-Q1": {
+                jumlahDokumenTahun: 85,
+                dokumenTerverifikasi: 108,
+                perluReview: 4,
+                disetujui: 12,
+                totalFinding: 5,
+                highFinding: 1,
+                nilaiRegulasi: 84.50,
+                nilaiFinding: 9.06,
+                units: [
+                    { unit: "Satuan Kerja Manajemen Risiko (SKMR)", regulasi: 92.00, finding: 4.50, subTerisi: 20, subTotal: 20 },
+                    { unit: "Divisi Kepatuhan & Tata Kelola (DKTK)", regulasi: 88.50, finding: 6.20, subTerisi: 16, subTotal: 20 },
+                    { unit: "Divisi Keamanan Informasi & Data (DKID)", regulasi: 81.00, finding: 11.40, subTerisi: 14, subTotal: 16 },
+                    { unit: "Satuan Audit Internal (SAI)", regulasi: 86.00, finding: 3.10, subTerisi: 18, subTotal: 20 },
+                    { unit: "Divisi Operasional & Layanan Cabang (DOLC)", regulasi: 79.50, finding: 8.75, subTerisi: 12, subTotal: 16 },
+                    { unit: "Divisi Keuangan & Akuntansi (DKA)", regulasi: 83.00, finding: 5.40, subTerisi: 15, subTotal: 18 }
+                ]
+            },
+            "2026-Q2": {
+                jumlahDokumenTahun: 34,
+                dokumenTerverifikasi: 124,
+                perluReview: 6,
+                disetujui: 7,
+                totalFinding: 3,
+                highFinding: 0,
+                nilaiRegulasi: 78.00,
+                nilaiFinding: 2.00,
+                units: [
+                    { unit: "Satuan Kerja Manajemen Risiko (SKMR)", regulasi: 89.00, finding: 3.20, subTerisi: 19, subTotal: 20 },
+                    { unit: "Divisi Kepatuhan & Tata Kelola (DKTK)", regulasi: 85.00, finding: 5.00, subTerisi: 17, subTotal: 20 },
+                    { unit: "Divisi Keamanan Informasi & Data (DKID)", regulasi: 76.50, finding: 9.10, subTerisi: 13, subTotal: 16 },
+                    { unit: "Satuan Audit Internal (SAI)", regulasi: 82.00, finding: 2.50, subTerisi: 16, subTotal: 20 },
+                    { unit: "Divisi Operasional & Layanan Cabang (DOLC)", regulasi: 74.00, finding: 7.80, subTerisi: 11, subTotal: 16 },
+                    { unit: "Divisi Keuangan & Akuntansi (DKA)", regulasi: 80.50, finding: 4.10, subTerisi: 14, subTotal: 18 }
+                ]
+            },
+            "2026-Q3": {
+                jumlahDokumenTahun: 42,
+                dokumenTerverifikasi: 176,
+                perluReview: 2,
+                disetujui: 15,
+                totalFinding: 2,
+                highFinding: 0,
+                nilaiRegulasi: 91.00,
+                nilaiFinding: 1.00,
+                units: [
+                    { unit: "Satuan Kerja Manajemen Risiko (SKMR)", regulasi: 95.00, finding: 2.00, subTerisi: 20, subTotal: 20 },
+                    { unit: "Divisi Kepatuhan & Tata Kelola (DKTK)", regulasi: 92.50, finding: 3.40, subTerisi: 19, subTotal: 20 },
+                    { unit: "Divisi Keamanan Informasi & Data (DKID)", regulasi: 87.00, finding: 6.80, subTerisi: 15, subTotal: 16 },
+                    { unit: "Satuan Audit Internal (SAI)", regulasi: 90.00, finding: 1.50, subTerisi: 18, subTotal: 20 },
+                    { unit: "Divisi Operasional & Layanan Cabang (DOLC)", regulasi: 84.50, finding: 5.20, subTerisi: 14, subTotal: 16 },
+                    { unit: "Divisi Keuangan & Akuntansi (DKA)", regulasi: 88.00, finding: 2.90, subTerisi: 17, subTotal: 18 }
+                ]
+            },
+            "2026-Q4": {
+                jumlahDokumenTahun: 48,
+                dokumenTerverifikasi: 228,
+                perluReview: 0,
+                disetujui: 18,
+                totalFinding: 0,
+                highFinding: 0,
+                nilaiRegulasi: 96.50,
+                nilaiFinding: 0.00,
+                units: [
+                    { unit: "Satuan Kerja Manajemen Risiko (SKMR)", regulasi: 98.00, finding: 1.00, subTerisi: 20, subTotal: 20 },
+                    { unit: "Divisi Kepatuhan & Tata Kelola (DKTK)", regulasi: 96.50, finding: 2.10, subTerisi: 20, subTotal: 20 },
+                    { unit: "Divisi Keamanan Informasi & Data (DKID)", regulasi: 93.00, finding: 4.00, subTerisi: 16, subTotal: 16 },
+                    { unit: "Satuan Audit Internal (SAI)", regulasi: 95.00, finding: 0.80, subTerisi: 20, subTotal: 20 },
+                    { unit: "Divisi Operasional & Layanan Cabang (DOLC)", regulasi: 91.50, finding: 3.50, subTerisi: 16, subTotal: 16 },
+                    { unit: "Divisi Keuangan & Akuntansi (DKA)", regulasi: 94.00, finding: 1.75, subTerisi: 18, subTotal: 18 }
+                ]
+            },
+            "2025-Q4": {
+                jumlahDokumenTahun: 36,
+                dokumenTerverifikasi: 155,
+                perluReview: 1,
+                disetujui: 11,
+                totalFinding: 6,
+                highFinding: 2,
+                nilaiRegulasi: 71.25,
+                nilaiFinding: 6.75,
+                units: [
+                    { unit: "Satuan Kerja Manajemen Risiko (SKMR)", regulasi: 80.00, finding: 7.50, subTerisi: 16, subTotal: 20 },
+                    { unit: "Divisi Kepatuhan & Tata Kelola (DKTK)", regulasi: 77.50, finding: 9.00, subTerisi: 15, subTotal: 20 },
+                    { unit: "Divisi Keamanan Informasi & Data (DKID)", regulasi: 68.00, finding: 14.20, subTerisi: 12, subTotal: 16 },
+                    { unit: "Satuan Audit Internal (SAI)", regulasi: 74.00, finding: 6.10, subTerisi: 14, subTotal: 20 },
+                    { unit: "Divisi Operasional & Layanan Cabang (DOLC)", regulasi: 66.50, finding: 11.40, subTerisi: 10, subTotal: 16 },
+                    { unit: "Divisi Keuangan & Akuntansi (DKA)", regulasi: 72.00, finding: 8.30, subTerisi: 13, subTotal: 18 }
+                ]
+            }
+        };
+
+        const complianceHistoryByYear = {
+            2026: { regulasi: 86.25, finding: 3.27 },
+            2025: { regulasi: 79.40, finding: 5.15 },
+            2024: { regulasi: 74.80, finding: 6.40 },
+            2023: { regulasi: 69.50, finding: 7.80 }
+        };
+
+        function getKategoriKepatuhan(totalSkor) {
+            if (totalSkor >= 85) {
+                return {
+                    label: "Sangat Patuh",
+                    deskripsi: "Tingkat kepatuhan sangat baik dengan pemenuhan regulasi dan pengendalian finding optimal.",
+                    badgeClass: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+                    textClass: "text-emerald-300"
+                };
+            }
+            if (totalSkor >= 75) {
+                return {
+                    label: "Patuh",
+                    deskripsi: "Tingkat kepatuhan memenuhi standar dengan beberapa catatan atau finding yang perlu ditindaklanjuti.",
+                    badgeClass: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+                    textClass: "text-blue-300"
+                };
+            }
+            if (totalSkor >= 60) {
+                return {
+                    label: "Cukup Patuh",
+                    deskripsi: "Kepatuhan cukup, namun diperlukan perbaikan berkelanjutan atas temuan dan kelengkapan dokumen.",
+                    badgeClass: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+                    textClass: "text-amber-300"
+                };
+            }
+            return {
+                label: "Kurang Patuh",
+                deskripsi: "Tingkat kepatuhan masih rendah dan memerlukan prioritas tindak lanjut segera.",
+                badgeClass: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+                textClass: "text-rose-300"
+            };
+        }
+
+        function formatUnsignedScore(val) {
+            return Number(val || 0).toFixed(2);
+        }
+
+        function renderTrendKepatuhan4Tahun(selectedYear, currentTotalSkor) {
+            const container = document.getElementById("trendKepatuhan4TahunChart");
+            const titleEl = document.getElementById("titleTrendKepatuhan4Tahun");
+            const subtitleEl = document.getElementById("subtitleTrendKepatuhan4Tahun");
+            if (!container) return;
+
+            const yearNum = parseInt(selectedYear, 10) || 2026;
+            const years = [yearNum - 3, yearNum - 2, yearNum - 1, yearNum];
+
+            if (titleEl) {
+                titleEl.textContent = `Total Nilai Kepatuhan (${years[0]} - ${years[years.length - 1]})`;
+            }
+            if (subtitleEl) {
+                subtitleEl.textContent = `Tahun ${yearNum} & 3 Tahun Kebelakang`;
+            }
+
+            const series = years.map((yr, index) => {
+                const base = complianceHistoryByYear[yr] || { regulasi: 72.00, finding: 5.00 };
+                let total = Number((Number(base.regulasi || 0) + Number(base.finding || 0)).toFixed(2));
+                if (index === years.length - 1 && typeof currentTotalSkor === "number") {
+                    total = Number(currentTotalSkor.toFixed(2));
+                }
+                const kategori = getKategoriKepatuhan(total);
+                return {
+                    year: yr,
+                    total,
+                    isCurrent: index === years.length - 1,
+                    kategori
+                };
+            });
+
+            const maxVal = Math.max(...series.map(s => s.total), 100);
+            const yTicks = [100, 75, 50, 25, 0];
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between text-[11px] text-slate-400">
+                        <span>Diagram Batang Total Nilai Kepatuhan Tahunan</span>
+                        <span class="font-mono text-slate-300">Skala 0 - 100</span>
+                    </div>
+
+                    <div class="relative h-56 pt-5 pb-2 px-2 bg-[#131a29]/55 border border-slate-800/80 rounded-xl">
+                        <!-- Grid Garis Horizontal -->
+                        <div class="absolute inset-x-12 top-6 bottom-8 flex flex-col justify-between pointer-events-none">
+                            ${yTicks.map(tick => `
+                                <div class="flex items-center w-full">
+                                    <span class="w-8 -ml-9 pr-2 text-right font-mono text-[10px] text-slate-500">${tick}</span>
+                                    <div class="flex-1 border-b border-dashed border-slate-800/90"></div>
+                                </div>
+                            `).join("")}
+                        </div>
+
+                        <!-- Kolom Diagram Batang -->
+                        <div class="relative z-10 h-full pl-10 pr-2 pb-6 flex items-end justify-around gap-3 sm:gap-5">
+                            ${series.map(item => {
+                                const heightPct = Math.max(4, Math.min(100, (item.total / maxVal) * 100));
+                                const barGradient = item.isCurrent
+                                    ? "from-blue-500 via-indigo-400 to-emerald-400 ring-1 ring-blue-400/40"
+                                    : "from-blue-600/80 to-indigo-500/80 hover:from-blue-500 hover:to-indigo-400";
+                                const valueColor = item.isCurrent ? "text-emerald-300" : "text-slate-200";
+                                const yearBadge = item.isCurrent
+                                    ? `<span class="mt-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30">Tahun Ini</span>`
+                                    : `<span class="mt-1 text-[9px] text-slate-500">Tahun Lalu</span>`;
+
+                                return `
+                                    <div class="flex-1 h-full flex flex-col items-center justify-end min-w-0">
+                                        <span class="font-mono text-[11px] font-bold ${valueColor} mb-1.5">${item.total.toFixed(2)}</span>
+                                        <div class="w-full max-w-[54px] flex-1 flex items-end">
+                                            <div
+                                                class="w-full rounded-t-lg bg-gradient-to-t ${barGradient} transition-all duration-300 shadow-lg"
+                                                style="height: ${heightPct}%"
+                                                title="${item.year}: ${item.total.toFixed(2)} (${item.kategori.label})"
+                                            ></div>
+                                        </div>
+                                        <span class="mt-2 font-mono text-xs font-semibold text-white">${item.year}</span>
+                                        ${yearBadge}
+                                    </div>
+                                `;
+                            }).join("")}
+                        </div>
+                    </div>
+
+                    <!-- Ringkasan Nilai Per Tahun -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        ${series.map(item => `
+                            <div class="bg-[#131a29]/75 border border-slate-800/80 rounded-lg px-3 py-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-mono text-[11px] font-semibold text-slate-300">${item.year}</span>
+                                    <span class="text-[10px] font-semibold ${item.kategori.textClass}">${item.kategori.label}</span>
+                                </div>
+                                <div class="font-mono text-sm font-bold text-white mt-0.5">${item.total.toFixed(2)}</div>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTop5TotalUnit(units) {
+            const container = document.getElementById("top5TotalUnitList");
+            if (!container) return;
+
+            const ranked = (units || [])
+                .map(u => {
+                    const reg = Number(u.regulasi || 0);
+                    const fnd = Number(u.finding || 0);
+                    const total = Number((reg + fnd).toFixed(2));
+                    const kategori = getKategoriKepatuhan(total);
+                    return { ...u, total, kategori };
+                })
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 5);
+
+            if (ranked.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 italic">Belum ada data unit.</p>`;
+                return;
+            }
+
+            const maxTotal = Math.max(...ranked.map(r => r.total), 100);
+
+            container.innerHTML = ranked.map((item, idx) => {
+                const barWidth = Math.max(5, Math.min(100, Math.round((item.total / maxTotal) * 100)));
+                return `
+                    <div class="space-y-1.5 bg-[#131a29]/65 border border-slate-800/80 rounded-lg p-3.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-2.5 min-w-0">
+                                <span class="w-5 h-5 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30 font-mono text-[11px] font-bold flex items-center justify-center shrink-0">
+                                    ${idx + 1}
+                                </span>
+                                <span class="font-semibold text-white truncate">${item.unit}</span>
+                            </div>
+                            <div class="flex items-center space-x-2 shrink-0">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${item.kategori.badgeClass}">
+                                    ${item.kategori.label}
+                                </span>
+                                <span class="font-mono font-bold text-emerald-300">${item.total.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden ml-7" style="width: calc(100% - 1.75rem);">
+                            <div class="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full" style="width: ${barWidth}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderTop5RegulasiUnit(units) {
+            const container = document.getElementById("top5RegulasiUnitList");
+            if (!container) return;
+
+            const ranked = (units || [])
+                .map(u => ({
+                    ...u,
+                    regulasiVal: Number(u.regulasi || 0),
+                    subTerisi: Number(u.subTerisi || 0),
+                    subTotal: Number(u.subTotal || 0)
+                }))
+                .sort((a, b) => b.regulasiVal - a.regulasiVal)
+                .slice(0, 5);
+
+            if (ranked.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 italic">Belum ada data regulasi unit.</p>`;
+                return;
+            }
+
+            const maxRegulasi = Math.max(...ranked.map(r => r.regulasiVal), 100);
+
+            container.innerHTML = ranked.map((item, idx) => {
+                const barWidth = Math.max(5, Math.min(100, Math.round((item.regulasiVal / maxRegulasi) * 100)));
+                return `
+                    <div class="space-y-1.5 bg-[#131a29]/65 border border-slate-800/80 rounded-lg p-3.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-2.5 min-w-0">
+                                <span class="w-5 h-5 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30 font-mono text-[11px] font-bold flex items-center justify-center shrink-0">
+                                    ${idx + 1}
+                                </span>
+                                <span class="font-semibold text-white truncate">${item.unit}</span>
+                            </div>
+                            <div class="flex items-center space-x-2 shrink-0">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-slate-800 text-slate-200 border border-slate-700/80">
+                                    Sub Indikator ${item.subTerisi}/${item.subTotal}
+                                </span>
+                                <span class="font-mono font-bold text-blue-300">${item.regulasiVal.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden ml-7" style="width: calc(100% - 1.75rem);">
+                            <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full" style="width: ${barWidth}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderTop5FindingUnit(units) {
+            const container = document.getElementById("top5FindingUnitList");
+            if (!container) return;
+
+            const ranked = (units || [])
+                .map(u => ({ ...u, findingVal: Number(u.finding || 0) }))
+                .sort((a, b) => b.findingVal - a.findingVal)
+                .slice(0, 5);
+
+            if (ranked.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 italic">Belum ada data finding unit.</p>`;
+                return;
+            }
+
+            const maxFinding = Math.max(...ranked.map(r => r.findingVal), 1);
+
+            container.innerHTML = ranked.map((item, idx) => {
+                const barWidth = Math.max(5, Math.min(100, Math.round((item.findingVal / maxFinding) * 100)));
+                return `
+                    <div class="space-y-1.5 bg-[#131a29]/65 border border-slate-800/80 rounded-lg p-3.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-2.5 min-w-0">
+                                <span class="w-5 h-5 rounded-md bg-rose-500/15 text-rose-300 border border-rose-500/30 font-mono text-[11px] font-bold flex items-center justify-center shrink-0">
+                                    ${idx + 1}
+                                </span>
+                                <span class="font-semibold text-white truncate">${item.unit}</span>
+                            </div>
+                            <span class="font-mono font-bold text-rose-300 shrink-0">${item.findingVal.toFixed(2)}</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden ml-7" style="width: calc(100% - 1.75rem);">
+                            <div class="h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-full" style="width: ${barWidth}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderDashboard() {
+            const tahun = document.getElementById("filterTahun")?.value || "2026";
+            const periode = document.getElementById("filterPeriode")?.value || "Q1";
+            const key = `${tahun}-${periode}`;
+            const current = dashboardData[key] || dashboardData["2026-Q1"];
+
+            const headerBadge = document.getElementById("headerPeriodeBadge");
+            if (headerBadge) {
+                headerBadge.textContent = `Periode ${tahun} • ${periode}`;
+            }
+
+            const totalDok = Number(current.jumlahDokumenTahun || 0);
+
+            document.getElementById("kpiLabelDokumenTahun").textContent = `Jumlah Dokumen Terverifikasi Tahun ${tahun}`;
+            document.getElementById("kpiJumlahDokumenTahun").textContent = totalDok;
+
+            document.getElementById("kpiPerluReview").textContent = current.perluReview;
+            document.getElementById("kpiDisetujui").textContent = current.disetujui;
+            document.getElementById("kpiTotalFinding").textContent = current.totalFinding;
+
+            const regulasiVal = Number(current.nilaiRegulasi || 0);
+            const findingVal = Number(current.nilaiFinding || 0);
+            const totalSkor = Number((regulasiVal + findingVal).toFixed(2));
+            const kategori = getKategoriKepatuhan(totalSkor);
+
+            document.getElementById("nilaiRegulasi").textContent = regulasiVal.toFixed(2);
+            document.getElementById("nilaiFinding").textContent = formatUnsignedScore(findingVal);
+            document.getElementById("totalNilaiKepatuhan").textContent = totalSkor.toFixed(2);
+
+            const teksKategori = document.getElementById("teksKategoriKepatuhan");
+            teksKategori.textContent = kategori.label;
+            teksKategori.className = `text-xl font-bold block ${kategori.textClass}`;
+
+            document.getElementById("deskripsiKategoriKepatuhan").textContent = kategori.deskripsi;
+
+            const topBadge = document.getElementById("kategoriKepatuhanBadge");
+            topBadge.textContent = `Kategori: ${kategori.label}`;
+            topBadge.className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border w-fit ${kategori.badgeClass}`;
+
+            const clampedPct = Math.max(0, Math.min(100, totalSkor));
+            document.getElementById("persentaseTotalNilai").textContent = `${totalSkor.toFixed(2)} / 100`;
+            document.getElementById("barTotalNilaiKepatuhan").style.width = `${clampedPct}%`;
+
+            renderTrendKepatuhan4Tahun(tahun, totalSkor);
+            renderTop5TotalUnit(current.units);
+            renderTop5RegulasiUnit(current.units);
+            renderTop5FindingUnit(current.units);
+        }
+
+        document.addEventListener("DOMContentLoaded", renderDashboard);
+    </script>
+</body>
+</html>

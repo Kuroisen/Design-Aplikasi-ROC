@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Tambah Regulasi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm">
+                        <span class="text-slate-500">Library</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <a href="regulasi.html" class="text-slate-500 hover:text-slate-300 transition">Regulasi</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Tambah Regulasi</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace (Full Kiri Kanan dengan padding px-8) -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+                
+                <!-- Back Button & Header Title -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-wide">Form Pembuatan Regulasi</h2>
+                        <p class="text-xs text-slate-400 mt-1">Tambahkan data regulasi baru beserta bobot penilaian dan informasi terkait.</p>
+                    </div>
+                    <a href="regulasi.html" class="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center space-x-2">
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                        <span>Kembali</span>
+                    </a>
+                </div>
+
+                <!-- Card Form (Full Width) -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden w-full">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-file-shield text-blue-500 text-sm"></i>
+                        <h3 class="text-sm font-semibold text-white tracking-wide">Informasi Rinci Regulasi</h3>
+                    </div>
+
+                    <form onsubmit="handleFormSubmit(event)" class="p-8 space-y-6">
+                        
+                        <!-- Baris 1: Tahun & Periode -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Tahun <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="inputTahun" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                                    <option value="" disabled selected>Pilih Tahun</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Periode <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="inputPeriode" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                                    <option value="" disabled selected>Pilih Periode</option>
+                                    <option value="TW 1">Triwulan 1 (TW 1)</option>
+                                    <option value="TW 2">Triwulan 2 (TW 2)</option>
+                                    <option value="TW 3">Triwulan 3 (TW 3)</option>
+                                    <option value="TW 4">Triwulan 4 (TW 4)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Baris 2: Otoritas & Bidang -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Otoritas <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="inputOtoritas" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                                    <option value="" disabled selected>Pilih Otoritas</option>
+                                    <option value="OJK">Otoritas Jasa Keuangan (OJK)</option>
+                                    <option value="BI">Bank Indonesia (BI)</option>
+                                    <option value="Kemenkeu">Kementerian Keuangan</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Bidang <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="inputBidang" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                                    <option value="" disabled selected>Pilih Bidang</option>
+                                    <option value="Manajemen Risiko">Manajemen Risiko</option>
+                                    <option value="Kepatuhan">Kepatuhan</option>
+                                    <option value="Audit Internal">Audit Internal</option>
+                                    <option value="Treasury & Operasional">Treasury & Operasional</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Baris 3: Nomor Regulasi -->
+                        <div class="space-y-2">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Nomor Regulasi <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="inputNomorRegulasi" required placeholder="Contoh: POJK/No.12/2026" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                        </div>
+
+                        <!-- Baris 4: Nama Regulasi -->
+                        <div class="space-y-2">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Nama Regulasi <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="inputNamaRegulasi" required placeholder="Contoh: Ketentuan umum mengenai pelaporan berkala sektor perbankan" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                        </div>
+
+                        <!-- Baris 5: Kriteria Penilaian -->
+                        <div class="space-y-2">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Kriteria Penilaian <span class="text-rose-500">*</span>
+                            </label>
+                            <textarea id="inputKriteriaPenilaian" rows="4" required placeholder="Masukkan rincian kriteria penilaian secara lengkap dan mendalam..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition custom-scrollbar"></textarea>
+                        </div>
+
+                        <!-- Baris 6: URL Dokumen / Sumber & Bobot Penilaian (%) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    URL Dokumen / Sumber <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-2.5 text-xs text-slate-500"><i class="fa-solid fa-link"></i></span>
+                                    <input type="url" id="inputUrl" required placeholder="https://ojk.go.id/regulasi/..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-9 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Bobot Penilaian (%) <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" id="inputBobotPenilaian" oninput="syncJumlahBobotRegulasi()" min="1" max="100" required placeholder="Contoh: 25" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 pr-10 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                                    <span class="absolute right-4 top-2.5 text-xs text-slate-500 font-medium">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Baris 7: Jumlah Bobot Regulasi -->
+                        <div class="space-y-2">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Jumlah Bobot Regulasi
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="inputJumlahBobotRegulasi" readonly value="0" class="w-full bg-[#131a29]/80 border border-slate-700/70 rounded-lg px-4 pr-10 py-2.5 text-xs text-emerald-400 font-semibold focus:outline-none cursor-not-allowed">
+                                <span class="absolute right-4 top-2.5 text-xs text-slate-500 font-medium">%</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500">Menampilkan jumlah bobot regulasi saat ini dan bertambah otomatis sesuai Bobot Penilaian (%) yang diisikan.</p>
+                        </div>
+
+                        <!-- Baris 8: Catatan -->
+                        <div class="space-y-2">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Catatan Tambahan
+                            </label>
+                            <textarea id="inputCatatan" rows="2" placeholder="Catatan atau keterangan opsional..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition custom-scrollbar"></textarea>
+                        </div>
+
+                        <!-- Baris 9: Active -->
+                        <div class="space-y-2">
+                            <label for="inputActive" class="inline-flex items-center space-x-2.5 cursor-pointer select-none">
+                                <input type="checkbox" id="inputActive" checked class="w-4 h-4 rounded border-slate-700 bg-[#131a29] text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600">
+                                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Active</span>
+                            </label>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-800">
+                            <a href="regulasi.html" class="px-5 py-2.5 bg-transparent hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-medium transition">
+                                Batal
+                            </a>
+                            <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-blue-600/20 flex items-center space-x-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Simpan Regulasi</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../sidebar.js"></script>
+
+    <!-- Script Sinkronisasi Jumlah Bobot Regulasi -->
+    <script>
+        const STORAGE_KEY_REGULASI = "ecompliance_regulasi_v1";
+
+        function getCurrentBobotRegulasi() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY_REGULASI);
+                if (!raw) return 0;
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return 0;
+                return parsed.reduce((sum, item) => sum + (Number(item.bobot) || 0), 0);
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function syncJumlahBobotRegulasi() {
+            const currentBobot = getCurrentBobotRegulasi();
+            const bobotInput = Number(document.getElementById('inputBobotPenilaian').value) || 0;
+            const total = currentBobot + bobotInput;
+            document.getElementById('inputJumlahBobotRegulasi').value = total;
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const tahun = document.getElementById('inputTahun').value;
+            const periode = document.getElementById('inputPeriode').value;
+            const otoritas = document.getElementById('inputOtoritas').value;
+            const bidang = document.getElementById('inputBidang').value;
+            const nomor = document.getElementById('inputNomorRegulasi').value;
+            const namaRegulasi = document.getElementById('inputNamaRegulasi').value;
+            const bobot = Number(document.getElementById('inputBobotPenilaian').value) || 0;
+            const jumlahBobotRegulasi = document.getElementById('inputJumlahBobotRegulasi').value;
+            const isActive = document.getElementById('inputActive').checked;
+
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY_REGULASI);
+                const list = raw ? JSON.parse(raw) : [];
+                if (Array.isArray(list)) {
+                    list.push({
+                        id: Date.now(),
+                        tahun,
+                        periode,
+                        otoritas,
+                        bidang,
+                        nomor,
+                        namaRegulasi,
+                        bobot,
+                        status: isActive ? "Active" : "Inactive"
+                    });
+                    localStorage.setItem(STORAGE_KEY_REGULASI, JSON.stringify(list));
+                }
+            } catch (e) {
+                // Abaikan error penyimpanan lokal jika tidak tersedia
+            }
+
+            alert(`Regulasi berhasil disimpan!\n\nNomor: ${nomor}\nNama Regulasi: ${namaRegulasi}\nTahun: ${tahun} (${periode})\nOtoritas: ${otoritas} | Bidang: ${bidang}\nBobot Penilaian: ${bobot}%\nJumlah Bobot Regulasi: ${jumlahBobotRegulasi}%\nActive: ${isActive ? 'Active' : 'Inactive'}`);
+            window.location.href = 'regulasi.html';
+        }
+
+        document.addEventListener("DOMContentLoaded", syncJumlahBobotRegulasi);
+    </script>
+</body>
+</html>

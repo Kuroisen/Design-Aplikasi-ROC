@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Manajemen User</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Sticky kolom Action saat tabel di-scroll ke kanan */
+        .sticky-action-th {
+            position: sticky;
+            right: 0;
+            z-index: 20;
+            background-color: #101624;
+            box-shadow: -8px 0 14px -6px rgba(2, 6, 23, 0.85);
+        }
+        .sticky-action-td {
+            position: sticky;
+            right: 0;
+            z-index: 10;
+            background-color: #0b0f19;
+            box-shadow: -8px 0 14px -6px rgba(2, 6, 23, 0.85);
+        }
+        tr:hover .sticky-action-td {
+            background-color: #131a29;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container" class="shrink-0"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <a href="../../index.html" class="text-slate-500 hover:text-slate-300 transition">e-Compliance</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="text-slate-500">Utility</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">User</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span id="impersonateActiveBadge" class="hidden items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                        <i class="fa-solid fa-user-secret mr-1.5 text-[10px]"></i>
+                        <span id="impersonateBadgeText">Impersonate Aktif</span>
+                    </span>
+                    <span class="hidden lg:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+
+                <!-- Page Header & Tombol Tambah User -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-wide">Manajemen User</h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Kelola data pengguna, hak akses (role), NIP, penempatan company, divisi, dan unit kerja.
+                        </p>
+                    </div>
+                    <a
+                        href="tambah-user.html"
+                        class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold transition shadow-lg shadow-blue-600/20 inline-flex items-center space-x-2 w-fit shrink-0"
+                    >
+                        <i class="fa-solid fa-plus text-[11px]"></i>
+                        <span>Tambah User</span>
+                    </a>
+                </div>
+
+                <!-- Banner Notifikasi Impersonate -->
+                <div id="impersonateBanner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl px-5 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
+                    <div class="flex items-center space-x-2.5 text-amber-200">
+                        <i class="fa-solid fa-user-secret text-amber-400 text-sm"></i>
+                        <span id="impersonateBannerText">Anda sedang melakukan impersonate sebagai pengguna tertentu.</span>
+                    </div>
+                    <button
+                        type="button"
+                        onclick="stopImpersonate()"
+                        class="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded-lg text-xs font-semibold transition w-fit shrink-0"
+                    >
+                        Kembali ke Admin
+                    </button>
+                </div>
+
+                <!-- Pencarian Data & Filter Company, Divisi, Unit -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        <!-- Pencarian Data -->
+                        <div class="md:col-span-4">
+                            <label for="searchUser" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-magnifying-glass text-blue-400 text-[11px]"></i>
+                                <span>Pencarian Data</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-2.5 text-xs text-slate-500">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    id="searchUser"
+                                    oninput="renderUserTable()"
+                                    placeholder="Cari nama, email, NIP, atau role..."
+                                    class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Filter Company -->
+                        <div class="md:col-span-3">
+                            <label for="filterCompany" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-landmark text-indigo-400 text-[11px]"></i>
+                                <span>Filter Company</span>
+                            </label>
+                            <select
+                                id="filterCompany"
+                                onchange="renderUserTable()"
+                                class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                            >
+                                <option value="">Semua Company</option>
+                                <option value="PT Bank Nusantara Sejahtera Tbk">PT Bank Nusantara Sejahtera Tbk</option>
+                                <option value="PT Nusantara Sekuritas Utama">PT Nusantara Sekuritas Utama</option>
+                                <option value="PT Nusantara Asuransi Jiwa">PT Nusantara Asuransi Jiwa</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Divisi -->
+                        <div class="md:col-span-3">
+                            <label for="filterDivisi" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-sitemap text-amber-400 text-[11px]"></i>
+                                <span>Filter Divisi</span>
+                            </label>
+                            <select
+                                id="filterDivisi"
+                                onchange="renderUserTable()"
+                                class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                            >
+                                <option value="">Semua Divisi</option>
+                                <option value="Direktorat Manajemen Risiko">Direktorat Manajemen Risiko</option>
+                                <option value="Direktorat Kepatuhan & Hukum">Direktorat Kepatuhan & Hukum</option>
+                                <option value="Direktorat Teknologi & Operasi">Direktorat Teknologi & Operasi</option>
+                                <option value="Direktorat Audit Internal">Direktorat Audit Internal</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Unit -->
+                        <div class="md:col-span-2">
+                            <label for="filterUnit" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-building text-emerald-400 text-[11px]"></i>
+                                <span>Filter Unit</span>
+                            </label>
+                            <select
+                                id="filterUnit"
+                                onchange="renderUserTable()"
+                                class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                            >
+                                <option value="">Semua Unit</option>
+                                <option value="Satuan Kerja Manajemen Risiko (SKMR)">Satuan Kerja Manajemen Risiko (SKMR)</option>
+                                <option value="Divisi Kepatuhan & Tata Kelola (DKTK)">Divisi Kepatuhan & Tata Kelola (DKTK)</option>
+                                <option value="Divisi Keamanan Informasi & Data (DKID)">Divisi Keamanan Informasi & Data (DKID)</option>
+                                <option value="Satuan Audit Internal (SAI)">Satuan Audit Internal (SAI)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabel User dengan Horizontal Scroll & Sticky Action Column -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between gap-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-users text-blue-500 text-sm"></i>
+                            <h3 class="text-sm font-semibold text-white tracking-wide">Tabel User</h3>
+                        </div>
+                        <span id="totalUserCount" class="text-xs text-slate-400">0 Data</span>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="min-w-[1180px] w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800/90 bg-[#101624] text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                    <th class="py-3.5 px-6 whitespace-nowrap">Nama</th>
+                                    <th class="py-3.5 px-6 whitespace-nowrap">Email</th>
+                                    <th class="py-3.5 px-6 whitespace-nowrap">Role</th>
+                                    <th class="py-3.5 px-6 whitespace-nowrap">NIP</th>
+                                    <th class="py-3.5 px-6 whitespace-nowrap">Company</th>
+                                    <th class="py-3.5 px-6 whitespace-nowrap">Divisi</th>
+                                    <th class="py-3.5 px-6 whitespace-nowrap">Unit</th>
+                                    <th class="py-3.5 px-6 text-center whitespace-nowrap">Status</th>
+                                    <th class="py-3.5 px-6 text-center whitespace-nowrap sticky-action-th">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody" class="divide-y divide-slate-800/80 text-xs">
+                                <!-- Di-render otomatis oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Modal Form Tambah / Edit User -->
+    <div id="userFormModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="userFormModalTitle" class="text-sm font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-user-plus text-blue-400"></i>
+                    <span>Tambah User</span>
+                </h3>
+                <button type="button" onclick="closeUserFormModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="formUser" onsubmit="handleSaveUser(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="editUserId">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label for="inputNamaUser" class="block font-semibold text-slate-300">Nama <span class="text-rose-400">*</span></label>
+                        <input
+                            type="text"
+                            id="inputNamaUser"
+                            required
+                            placeholder="Contoh: Rina Wijaya"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="inputEmailUser" class="block font-semibold text-slate-300">Email <span class="text-rose-400">*</span></label>
+                        <input
+                            type="email"
+                            id="inputEmailUser"
+                            required
+                            placeholder="nama@perusahaan.co.id"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label for="inputRoleUser" class="block font-semibold text-slate-300">Role <span class="text-rose-400">*</span></label>
+                        <select
+                            id="inputRoleUser"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                        >
+                            <option value="Compliance Officer">Compliance Officer</option>
+                            <option value="Reviewer">Reviewer</option>
+                            <option value="Risk Analyst">Risk Analyst</option>
+                            <option value="Auditor">Auditor</option>
+                            <option value="Administrator">Administrator</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="inputNipUser" class="block font-semibold text-slate-300">NIP <span class="text-rose-400">*</span></label>
+                        <input
+                            type="text"
+                            id="inputNipUser"
+                            required
+                            placeholder="Contoh: 199204152018011002"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 font-mono placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputCompanyUser" class="block font-semibold text-slate-300">Company <span class="text-rose-400">*</span></label>
+                    <select
+                        id="inputCompanyUser"
+                        class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                    >
+                        <option value="PT Bank Nusantara Sejahtera Tbk">PT Bank Nusantara Sejahtera Tbk</option>
+                        <option value="PT Nusantara Sekuritas Utama">PT Nusantara Sekuritas Utama</option>
+                        <option value="PT Nusantara Asuransi Jiwa">PT Nusantara Asuransi Jiwa</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label for="inputDivisiUser" class="block font-semibold text-slate-300">Divisi <span class="text-rose-400">*</span></label>
+                        <select
+                            id="inputDivisiUser"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                        >
+                            <option value="Direktorat Manajemen Risiko">Direktorat Manajemen Risiko</option>
+                            <option value="Direktorat Kepatuhan & Hukum">Direktorat Kepatuhan & Hukum</option>
+                            <option value="Direktorat Teknologi & Operasi">Direktorat Teknologi & Operasi</option>
+                            <option value="Direktorat Audit Internal">Direktorat Audit Internal</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="inputUnitUser" class="block font-semibold text-slate-300">Unit <span class="text-rose-400">*</span></label>
+                        <select
+                            id="inputUnitUser"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                        >
+                            <option value="Satuan Kerja Manajemen Risiko (SKMR)">Satuan Kerja Manajemen Risiko (SKMR)</option>
+                            <option value="Divisi Kepatuhan & Tata Kelola (DKTK)">Divisi Kepatuhan & Tata Kelola (DKTK)</option>
+                            <option value="Divisi Keamanan Informasi & Data (DKID)">Divisi Keamanan Informasi & Data (DKID)</option>
+                            <option value="Satuan Audit Internal (SAI)">Satuan Audit Internal (SAI)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-800">
+                    <button type="button" onclick="closeUserFormModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium transition">
+                        Batal
+                    </button>
+                    <button type="submit" id="btnSubmitUser" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition shadow-lg shadow-blue-600/20">
+                        Simpan User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Delete User -->
+    <div id="deleteUserModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+            <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                <div class="w-9 h-9 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-white">Hapus User</h3>
+                    <p class="text-[11px] text-slate-400">Data user akan dihapus dari daftar.</p>
+                </div>
+            </div>
+            <p id="deleteUserMessage" class="text-xs text-slate-300 leading-relaxed"></p>
+            <div class="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-800">
+                <button type="button" onclick="closeDeleteUserModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition">
+                    Batal
+                </button>
+                <button type="button" onclick="confirmDeleteUser()" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold transition">
+                    Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../sidebar.js"></script>
+
+    <!-- Script Halaman User -->
+    <script>
+        let userDataset = [
+            {
+                id: "USR-001",
+                nama: "Rina Wijaya",
+                email: "rina.wijaya@banknusantara.co.id",
+                role: "Compliance Officer",
+                nip: "199105122016022001",
+                company: "PT Bank Nusantara Sejahtera Tbk",
+                divisi: "Direktorat Manajemen Risiko",
+                unit: "Satuan Kerja Manajemen Risiko (SKMR)",
+                active: true
+            },
+            {
+                id: "USR-002",
+                nama: "Budi Santoso",
+                email: "budi.santoso@banknusantara.co.id",
+                role: "Reviewer",
+                nip: "198809232014031002",
+                company: "PT Bank Nusantara Sejahtera Tbk",
+                divisi: "Direktorat Kepatuhan & Hukum",
+                unit: "Divisi Kepatuhan & Tata Kelola (DKTK)",
+                active: true
+            },
+            {
+                id: "USR-003",
+                nama: "Dewi Lestari",
+                email: "dewi.lestari@nusantarasekuritas.co.id",
+                role: "Risk Analyst",
+                nip: "199402182019012003",
+                company: "PT Nusantara Sekuritas Utama",
+                divisi: "Direktorat Teknologi & Operasi",
+                unit: "Divisi Keamanan Informasi & Data (DKID)",
+                active: false
+            },
+            {
+                id: "USR-004",
+                nama: "Ahmad Fauzi",
+                email: "ahmad.fauzi@nusantaraasuransi.co.id",
+                role: "Auditor",
+                nip: "199011042015041004",
+                company: "PT Nusantara Asuransi Jiwa",
+                divisi: "Direktorat Audit Internal",
+                unit: "Satuan Audit Internal (SAI)",
+                active: true
+            }
+        ];
+
+        let pendingDeleteUserId = null;
+        let impersonatedUser = null;
+
+        function renderStatusBadge(active) {
+            if (active) {
+                return `
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                        Active
+                    </span>
+                `;
+            }
+            return `
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-700/40 text-slate-400 border border-slate-700">
+                    Inactive
+                </span>
+            `;
+        }
+
+        function renderUserTable() {
+            const tbody = document.getElementById("userTableBody");
+            const countEl = document.getElementById("totalUserCount");
+            const keyword = (document.getElementById("searchUser")?.value || "").trim().toLowerCase();
+            const selectedCompany = document.getElementById("filterCompany")?.value || "";
+            const selectedDivisi = document.getElementById("filterDivisi")?.value || "";
+            const selectedUnit = document.getElementById("filterUnit")?.value || "";
+
+            const filtered = userDataset.filter(item => {
+                const matchKeyword = !keyword ||
+                    String(item.nama || "").toLowerCase().includes(keyword) ||
+                    String(item.email || "").toLowerCase().includes(keyword) ||
+                    String(item.role || "").toLowerCase().includes(keyword) ||
+                    String(item.nip || "").toLowerCase().includes(keyword) ||
+                    String(item.company || "").toLowerCase().includes(keyword) ||
+                    String(item.divisi || "").toLowerCase().includes(keyword) ||
+                    String(item.unit || "").toLowerCase().includes(keyword);
+
+                const matchCompany = !selectedCompany || String(item.company) === selectedCompany;
+                const matchDivisi = !selectedDivisi || String(item.divisi) === selectedDivisi;
+                const matchUnit = !selectedUnit || String(item.unit) === selectedUnit;
+
+                return matchKeyword && matchCompany && matchDivisi && matchUnit;
+            });
+
+            countEl.textContent = `${filtered.length} Data`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="py-8 px-6 text-center text-slate-500">
+                            Tidak ada data user yang sesuai dengan pencarian atau filter.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const toggleIcon = item.active
+                    ? `<i class="fa-solid fa-toggle-on text-sm text-emerald-400"></i>`
+                    : `<i class="fa-solid fa-toggle-off text-sm text-slate-500"></i>`;
+                const toggleTitle = item.active ? "Set Inactive" : "Set Active";
+
+                return `
+                    <tr class="hover:bg-[#131a29]/60 transition">
+                        <td class="py-4 px-6 font-semibold text-white whitespace-nowrap">${item.nama}</td>
+                        <td class="py-4 px-6 text-slate-300 whitespace-nowrap">${item.email}</td>
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                                ${item.role}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 font-mono text-slate-300 whitespace-nowrap">${item.nip}</td>
+                        <td class="py-4 px-6 text-slate-200 whitespace-nowrap">${item.company}</td>
+                        <td class="py-4 px-6 text-slate-300 whitespace-nowrap">${item.divisi}</td>
+                        <td class="py-4 px-6 text-slate-300 whitespace-nowrap">${item.unit}</td>
+                        <td class="py-4 px-6 text-center whitespace-nowrap">${renderStatusBadge(Boolean(item.active))}</td>
+                        <td class="py-4 px-6 text-center whitespace-nowrap sticky-action-td">
+                            <div class="inline-flex items-center justify-center space-x-1.5">
+                                <button
+                                    type="button"
+                                    onclick="handleImpersonateUser('${item.id}')"
+                                    title="Impersonate"
+                                    aria-label="Impersonate"
+                                    class="p-2 rounded-lg bg-slate-800/80 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 border border-slate-700/60 transition"
+                                >
+                                    <i class="fa-solid fa-user-secret text-xs"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    onclick="toggleUserActive('${item.id}')"
+                                    title="${toggleTitle}"
+                                    aria-label="${toggleTitle}"
+                                    class="p-2 rounded-lg bg-slate-800/80 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-400 border border-slate-700/60 transition"
+                                >
+                                    ${toggleIcon}
+                                </button>
+                                <button
+                                    type="button"
+                                    onclick="openEditUserModal('${item.id}')"
+                                    title="Edit"
+                                    aria-label="Edit"
+                                    class="p-2 rounded-lg bg-slate-800/80 hover:bg-blue-500/20 text-slate-300 hover:text-blue-400 border border-slate-700/60 transition"
+                                >
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    onclick="openDeleteUserModal('${item.id}')"
+                                    title="Delete"
+                                    aria-label="Delete"
+                                    class="p-2 rounded-lg bg-slate-800/80 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 border border-slate-700/60 transition"
+                                >
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        function handleImpersonateUser(id) {
+            const target = userDataset.find(u => u.id === id);
+            if (!target) return;
+
+            impersonatedUser = target;
+            document.getElementById("impersonateActiveBadge").classList.remove("hidden");
+            document.getElementById("impersonateActiveBadge").classList.add("inline-flex");
+            document.getElementById("impersonateBadgeText").textContent = `Impersonate: ${target.nama}`;
+
+            document.getElementById("impersonateBanner").classList.remove("hidden");
+            document.getElementById("impersonateBannerText").textContent =
+                `Mode Impersonate aktif sebagai ${target.nama} (${target.role} • ${target.unit}).`;
+        }
+
+        function stopImpersonate() {
+            impersonatedUser = null;
+            document.getElementById("impersonateActiveBadge").classList.add("hidden");
+            document.getElementById("impersonateActiveBadge").classList.remove("inline-flex");
+            document.getElementById("impersonateBanner").classList.add("hidden");
+        }
+
+        function toggleUserActive(id) {
+            const idx = userDataset.findIndex(u => u.id === id);
+            if (idx === -1) return;
+            userDataset[idx].active = !userDataset[idx].active;
+            renderUserTable();
+        }
+
+        function openAddUserModal() {
+            document.getElementById("editUserId").value = "";
+            document.getElementById("inputNamaUser").value = "";
+            document.getElementById("inputEmailUser").value = "";
+            document.getElementById("inputRoleUser").value = "Compliance Officer";
+            document.getElementById("inputNipUser").value = "";
+            document.getElementById("inputCompanyUser").value = "PT Bank Nusantara Sejahtera Tbk";
+            document.getElementById("inputDivisiUser").value = "Direktorat Manajemen Risiko";
+            document.getElementById("inputUnitUser").value = "Satuan Kerja Manajemen Risiko (SKMR)";
+
+            document.getElementById("userFormModalTitle").innerHTML = `
+                <i class="fa-solid fa-user-plus text-blue-400"></i>
+                <span>Tambah User</span>
+            `;
+            document.getElementById("btnSubmitUser").textContent = "Simpan User";
+            document.getElementById("userFormModal").classList.remove("hidden");
+        }
+
+        function openEditUserModal(id) {
+            const item = userDataset.find(u => u.id === id);
+            if (!item) return;
+
+            document.getElementById("editUserId").value = item.id;
+            document.getElementById("inputNamaUser").value = item.nama;
+            document.getElementById("inputEmailUser").value = item.email;
+            document.getElementById("inputRoleUser").value = item.role;
+            document.getElementById("inputNipUser").value = item.nip;
+            document.getElementById("inputCompanyUser").value = item.company;
+            document.getElementById("inputDivisiUser").value = item.divisi;
+            document.getElementById("inputUnitUser").value = item.unit;
+
+            document.getElementById("userFormModalTitle").innerHTML = `
+                <i class="fa-solid fa-user-pen text-amber-400"></i>
+                <span>Edit User</span>
+            `;
+            document.getElementById("btnSubmitUser").textContent = "Update User";
+            document.getElementById("userFormModal").classList.remove("hidden");
+        }
+
+        function closeUserFormModal() {
+            document.getElementById("userFormModal").classList.add("hidden");
+        }
+
+        function handleSaveUser(event) {
+            event.preventDefault();
+            const editId = document.getElementById("editUserId").value;
+            const nama = document.getElementById("inputNamaUser").value.trim();
+            const email = document.getElementById("inputEmailUser").value.trim();
+            const role = document.getElementById("inputRoleUser").value;
+            const nip = document.getElementById("inputNipUser").value.trim();
+            const company = document.getElementById("inputCompanyUser").value;
+            const divisi = document.getElementById("inputDivisiUser").value;
+            const unit = document.getElementById("inputUnitUser").value;
+
+            if (!nama || !email || !nip) return;
+
+            if (editId) {
+                const idx = userDataset.findIndex(u => u.id === editId);
+                if (idx !== -1) {
+                    userDataset[idx] = {
+                        ...userDataset[idx],
+                        nama,
+                        email,
+                        role,
+                        nip,
+                        company,
+                        divisi,
+                        unit
+                    };
+                }
+            } else {
+                const nextNum = String(userDataset.length + 1).padStart(3, "0");
+                userDataset.push({
+                    id: `USR-${nextNum}`,
+                    nama,
+                    email,
+                    role,
+                    nip,
+                    company,
+                    divisi,
+                    unit,
+                    active: true
+                });
+            }
+
+            renderUserTable();
+            closeUserFormModal();
+        }
+
+        function openDeleteUserModal(id) {
+            const item = userDataset.find(u => u.id === id);
+            if (!item) return;
+            pendingDeleteUserId = id;
+            document.getElementById("deleteUserMessage").innerHTML =
+                `Apakah Anda yakin ingin menghapus user <strong class="text-white">${item.nama}</strong> (<span class="font-mono text-blue-400">${item.nip}</span>)?`;
+            document.getElementById("deleteUserModal").classList.remove("hidden");
+        }
+
+        function closeDeleteUserModal() {
+            pendingDeleteUserId = null;
+            document.getElementById("deleteUserModal").classList.add("hidden");
+        }
+
+        function confirmDeleteUser() {
+            if (!pendingDeleteUserId) return;
+            userDataset = userDataset.filter(u => u.id !== pendingDeleteUserId);
+            renderUserTable();
+            closeDeleteUserModal();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            renderUserTable();
+        });
+    </script>
+</body>
+</html>

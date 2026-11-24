@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Tambah Periode</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-6 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">Parameter</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="text-slate-500">Periode</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <a href="periode-periode.html" class="text-slate-500 hover:text-slate-300 transition">Periode</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Tambah Periode</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+                
+                <!-- Back Button & Header Title -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Tambah Periode</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Pilih tahun, isikan nama periode, dan atur status Active.</p>
+                    </div>
+                    <a href="periode-periode.html" class="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center space-x-2 w-fit shrink-0">
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                        <span>Kembali ke Periode</span>
+                    </a>
+                </div>
+
+                <!-- Form Card -->
+                <form onsubmit="handleFormSubmit(event)" class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-calendar-check text-indigo-400 text-sm"></i>
+                        <h3 class="text-sm font-semibold text-white tracking-wide">Formulir Periode</h3>
+                    </div>
+
+                    <div class="p-6 flex flex-col space-y-5 text-xs">
+                        
+                        <!-- 1. Tahun & Periode -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-2">
+                                <label for="selectTahun" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Tahun <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="selectTahun" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition cursor-pointer">
+                                    <option value="" disabled selected>Pilih Tahun</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="inputNamaPeriode" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Periode <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="inputNamaPeriode" required placeholder="Contoh: Q1 Jan-Mar" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                            </div>
+                        </div>
+
+                        <!-- 2. Active Checkbox -->
+                        <div class="space-y-2">
+                            <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Active
+                            </span>
+                            <label for="checkboxActivePeriode" class="inline-flex items-center space-x-2.5 cursor-pointer select-none pt-0.5">
+                                <input type="checkbox" id="checkboxActivePeriode" checked onchange="updateActiveLabel()" class="w-4 h-4 rounded border-slate-600 bg-[#131a29] text-blue-600 focus:ring-2 focus:ring-blue-500/40 cursor-pointer accent-blue-600">
+                                <span id="labelActivePeriode" class="text-xs font-semibold text-emerald-400 transition">Active</span>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Tombol Aksi -->
+                    <div class="px-6 py-4 bg-[#131a29]/70 border-t border-slate-800 flex items-center justify-end space-x-3">
+                        <a href="periode-periode.html" class="px-5 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition">
+                            Batal
+                        </a>
+                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-indigo-600/20 flex items-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Simpan Periode</span>
+                        </button>
+                    </div>
+                </form>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal (3 level dari root folder) -->
+    <script src="../../../sidebar.js"></script>
+
+    <!-- Script Dropdown Tahun, Active Checkbox & Submit Form -->
+    <script>
+        const STORAGE_KEY = "ecompliance_periode_periode_v1";
+        const TAHUN_STORAGE_KEY = "ecompliance_periode_tahun_v1";
+
+        const defaultPeriodeList = [
+            { id: 1, tahun: "2026", periode: "Q1 Jan-Mar", activeStatus: "Active" },
+            { id: 2, tahun: "2026", periode: "Q2 Apr-Jun", activeStatus: "Active" },
+            { id: 3, tahun: "2026", periode: "Q3 Jul-Sep", activeStatus: "Inactive" },
+            { id: 4, tahun: "2026", periode: "Q4 Okt-Des", activeStatus: "Inactive" }
+        ];
+
+        function populateTahunOptions() {
+            const select = document.getElementById("selectTahun");
+            const baseYears = ["2026", "2025", "2024"];
+            let tahunDariStorage = [];
+
+            try {
+                const rawTahun = localStorage.getItem(TAHUN_STORAGE_KEY);
+                const parsedTahun = rawTahun ? JSON.parse(rawTahun) : [];
+                if (Array.isArray(parsedTahun)) {
+                    tahunDariStorage = parsedTahun
+                        .map(t => String(t.nama ?? t.tahun ?? "").trim())
+                        .filter(Boolean);
+                }
+            } catch (e) {
+                tahunDariStorage = [];
+            }
+
+            const allYears = [...new Set([...tahunDariStorage, ...baseYears])].sort((a, b) => b.localeCompare(a));
+
+            select.innerHTML = `<option value="" disabled selected>Pilih Tahun</option>` + allYears
+                .map(yr => `<option value="${yr}">${yr}</option>`)
+                .join("");
+        }
+
+        function updateActiveLabel() {
+            const checkbox = document.getElementById("checkboxActivePeriode");
+            const label = document.getElementById("labelActivePeriode");
+
+            if (checkbox.checked) {
+                label.textContent = "Active";
+                label.className = "text-xs font-semibold text-emerald-400 transition";
+            } else {
+                label.textContent = "Inactive";
+                label.className = "text-xs font-semibold text-slate-400 transition";
+            }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const tahun = document.getElementById("selectTahun").value.trim();
+            const periode = document.getElementById("inputNamaPeriode").value.trim();
+            const isActive = document.getElementById("checkboxActivePeriode").checked;
+            const activeStatus = isActive ? "Active" : "Inactive";
+
+            if (!tahun || !periode) {
+                alert("Silakan pilih Tahun dan isikan Periode terlebih dahulu.");
+                return;
+            }
+
+            let existing = [];
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                existing = raw ? JSON.parse(raw) : [...defaultPeriodeList];
+                if (!Array.isArray(existing)) {
+                    existing = [...defaultPeriodeList];
+                }
+            } catch (e) {
+                existing = [...defaultPeriodeList];
+            }
+
+            const nextId = existing.length > 0
+                ? Math.max(...existing.map(p => Number(p.id) || 0)) + 1
+                : 1;
+
+            existing.push({
+                id: nextId,
+                tahun,
+                periode,
+                activeStatus
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+
+            alert(
+                `Data Periode berhasil disimpan!\n\n` +
+                `Tahun: ${tahun}\n` +
+                `Periode: ${periode}\n` +
+                `Active: ${activeStatus}`
+            );
+
+            window.location.href = "periode-periode.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", populateTahunOptions);
+    </script>
+</body>
+</html>

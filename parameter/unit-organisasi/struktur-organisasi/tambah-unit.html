@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Tambah Unit Organisasi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-6 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">Parameter</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="text-slate-500">Unit Organisasi</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <a href="struktur-organisasi.html" class="text-slate-500 hover:text-slate-300 transition">Struktur Organisasi</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Tambah Unit</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+                
+                <!-- Back Button & Header Title -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Tambah Unit Organisasi</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Lengkapi data unit organisasi beserta induk, direktorat, pimpinan, unit kerja, dan cabang.</p>
+                    </div>
+                    <a href="struktur-organisasi.html" class="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center space-x-2 w-fit shrink-0">
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                        <span>Kembali ke Struktur Organisasi</span>
+                    </a>
+                </div>
+
+                <!-- Form Card (Layout 1 Kolom Full Ke Bawah) -->
+                <form onsubmit="handleFormSubmit(event)" class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-sitemap text-indigo-400 text-sm"></i>
+                        <h3 class="text-sm font-semibold text-white tracking-wide">Formulir Data Unit Organisasi</h3>
+                    </div>
+
+                    <div class="p-6 flex flex-col space-y-5 text-xs">
+                        
+                        <!-- 1. Parent (Searchable Dropdown - Opsional) -->
+                        <div class="space-y-2 relative" data-dropdown="parent">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Parent
+                            </label>
+                            <input type="hidden" id="inputParent" value="">
+                            <button type="button" onclick="toggleSearchDropdown('parent')" class="w-full bg-[#131a29] border border-slate-700/70 hover:border-slate-600 rounded-lg px-4 py-2.5 text-xs text-left flex items-center justify-between transition focus:outline-none focus:border-indigo-500">
+                                <span id="selectedLabel-parent" class="text-slate-400">-- Pilih Parent Unit (Opsional) --</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                            </button>
+                            <div id="dropdownPanel-parent" class="hidden absolute z-30 left-0 right-0 mt-1 bg-[#111726] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2.5 border-b border-slate-800 bg-[#0d1220] relative">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-5 top-4.5 text-slate-500 text-xs"></i>
+                                    <input type="text" id="searchInput-parent" oninput="filterSimpleOptions('parent')" placeholder="Cari parent unit..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div id="optionsList-parent" class="max-h-52 overflow-y-auto custom-scrollbar p-1.5 space-y-1"></div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Direktorat (Searchable Dropdown - Wajib) -->
+                        <div class="space-y-2 relative" data-dropdown="direktorat">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Direktorat <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="hidden" id="inputDirektorat" value="">
+                            <button type="button" onclick="toggleSearchDropdown('direktorat')" class="w-full bg-[#131a29] border border-slate-700/70 hover:border-slate-600 rounded-lg px-4 py-2.5 text-xs text-left flex items-center justify-between transition focus:outline-none focus:border-indigo-500">
+                                <span id="selectedLabel-direktorat" class="text-slate-400">Pilih Direktorat</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                            </button>
+                            <div id="dropdownPanel-direktorat" class="hidden absolute z-30 left-0 right-0 mt-1 bg-[#111726] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2.5 border-b border-slate-800 bg-[#0d1220] relative">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-5 top-4.5 text-slate-500 text-xs"></i>
+                                    <input type="text" id="searchInput-direktorat" oninput="filterSimpleOptions('direktorat')" placeholder="Cari direktorat..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div id="optionsList-direktorat" class="max-h-52 overflow-y-auto custom-scrollbar p-1.5 space-y-1"></div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Pimpinan (Searchable Dropdown dengan List User dalam Bentuk Card - Opsional) -->
+                        <div class="space-y-2 relative" data-dropdown="pimpinan">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Pimpinan
+                            </label>
+                            <input type="hidden" id="inputPimpinan" value="">
+                            <button type="button" onclick="toggleSearchDropdown('pimpinan')" class="w-full bg-[#131a29] border border-slate-700/70 hover:border-slate-600 rounded-lg px-4 py-2.5 text-xs text-left flex items-center justify-between transition focus:outline-none focus:border-indigo-500">
+                                <span id="selectedLabel-pimpinan" class="text-slate-400">-- Pilih Pimpinan / Pegawai (Opsional) --</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                            </button>
+                            <div id="dropdownPanel-pimpinan" class="hidden absolute z-30 left-0 right-0 mt-1 bg-[#111726] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2.5 border-b border-slate-800 bg-[#0d1220] relative">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-5 top-4.5 text-slate-500 text-xs"></i>
+                                    <input type="text" id="searchInput-pimpinan" oninput="filterPimpinanCards()" placeholder="Cari nama pegawai, NIK, unit kerja, atau jabatan..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div id="optionsList-pimpinan" class="max-h-72 overflow-y-auto custom-scrollbar p-2.5 space-y-2"></div>
+                            </div>
+
+                            <!-- Preview Card Pimpinan Terpilih -->
+                            <div id="selectedPimpinanPreview" class="hidden bg-[#131a29]/80 border border-indigo-500/30 rounded-xl p-3.5">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="space-y-1 text-xs">
+                                        <p class="font-semibold text-white text-sm" id="prevNamaPegawai"></p>
+                                        <p class="text-[11px] text-slate-400">NIK: <span id="prevNik" class="font-mono text-indigo-300"></span></p>
+                                        <p class="text-[11px] text-slate-400">Unit Kerja: <span id="prevUnitKerja" class="text-slate-200"></span></p>
+                                        <p class="text-[11px] text-slate-400">Jabatan: <span id="prevJabatan" class="text-emerald-400 font-medium"></span></p>
+                                    </div>
+                                    <button type="button" onclick="clearPimpinanSelection()" title="Hapus Pilihan" class="text-slate-400 hover:text-rose-400 text-xs p-1">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Unit Code -->
+                        <div class="space-y-2">
+                            <label for="inputUnitCode" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Unit Code <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="inputUnitCode" required placeholder="Contoh: 1001103" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                        </div>
+
+                        <!-- 5. Nama Unit -->
+                        <div class="space-y-2">
+                            <label for="inputNamaUnit" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Nama Unit <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="inputNamaUnit" required placeholder="Contoh: Divisi Kredit & Pembiayaan" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                        </div>
+
+                        <!-- 6. Unit Kerja (Searchable Dropdown - Wajib) -->
+                        <div class="space-y-2 relative" data-dropdown="unitKerja">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Unit Kerja <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="hidden" id="inputUnitKerja" value="">
+                            <button type="button" onclick="toggleSearchDropdown('unitKerja')" class="w-full bg-[#131a29] border border-slate-700/70 hover:border-slate-600 rounded-lg px-4 py-2.5 text-xs text-left flex items-center justify-between transition focus:outline-none focus:border-indigo-500">
+                                <span id="selectedLabel-unitKerja" class="text-slate-400">Pilih Unit Kerja</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                            </button>
+                            <div id="dropdownPanel-unitKerja" class="hidden absolute z-30 left-0 right-0 mt-1 bg-[#111726] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2.5 border-b border-slate-800 bg-[#0d1220] relative">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-5 top-4.5 text-slate-500 text-xs"></i>
+                                    <input type="text" id="searchInput-unitKerja" oninput="filterSimpleOptions('unitKerja')" placeholder="Cari unit kerja..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div id="optionsList-unitKerja" class="max-h-52 overflow-y-auto custom-scrollbar p-1.5 space-y-1"></div>
+                            </div>
+                        </div>
+
+                        <!-- 7. Kantor Cabang (Searchable Dropdown - Opsional: Konvensional, Syariah) -->
+                        <div class="space-y-2 relative" data-dropdown="cabang">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Kantor Cabang
+                            </label>
+                            <input type="hidden" id="inputKantorCabang" value="">
+                            <button type="button" onclick="toggleSearchDropdown('cabang')" class="w-full bg-[#131a29] border border-slate-700/70 hover:border-slate-600 rounded-lg px-4 py-2.5 text-xs text-left flex items-center justify-between transition focus:outline-none focus:border-indigo-500">
+                                <span id="selectedLabel-cabang" class="text-slate-400">-- Pilih Kantor Cabang (Opsional) --</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                            </button>
+                            <div id="dropdownPanel-cabang" class="hidden absolute z-30 left-0 right-0 mt-1 bg-[#111726] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2.5 border-b border-slate-800 bg-[#0d1220] relative">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-5 top-4.5 text-slate-500 text-xs"></i>
+                                    <input type="text" id="searchInput-cabang" oninput="filterSimpleOptions('cabang')" placeholder="Cari kantor cabang..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div id="optionsList-cabang" class="max-h-52 overflow-y-auto custom-scrollbar p-1.5 space-y-1"></div>
+                            </div>
+                        </div>
+
+                        <!-- 8. Status (Checkbox) -->
+                        <div class="space-y-2 pt-1">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Status
+                            </label>
+                            <label for="inputStatus" class="inline-flex items-center space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="inputStatus" checked class="w-4 h-4 rounded bg-[#131a29] border-slate-700 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer">
+                                <span id="statusLabelText" class="text-xs font-medium text-emerald-400">Aktif</span>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Tombol Aksi -->
+                    <div class="px-6 py-4 bg-[#131a29]/70 border-t border-slate-800 flex items-center justify-end space-x-3">
+                        <a href="struktur-organisasi.html" class="px-5 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition">
+                            Batal
+                        </a>
+                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-indigo-600/20 flex items-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Simpan Unit</span>
+                        </button>
+                    </div>
+                </form>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../../sidebar.js"></script>
+
+    <!-- Script Searchable Dropdown, Card Pimpinan & Submit -->
+    <script>
+        const dropdownConfig = {
+            parent: {
+                hiddenInputId: "inputParent",
+                labelId: "selectedLabel-parent",
+                placeholder: "-- Pilih Parent Unit (Opsional) --",
+                allowClear: true,
+                options: [
+                    "100 - Bank Kalsel",
+                    "1001 - Direktur Utama",
+                    "10011 - Direktur Bisnis",
+                    "10012 - Direktur Kepatuhan",
+                    "10013 - Direktur Operasional"
+                ]
+            },
+            direktorat: {
+                hiddenInputId: "inputDirektorat",
+                labelId: "selectedLabel-direktorat",
+                placeholder: "Pilih Direktorat",
+                allowClear: false,
+                options: [
+                    "Direktur Utama",
+                    "Direktur Bisnis",
+                    "Direktur Kepatuhan",
+                    "Direktur Operasional"
+                ]
+            },
+            unitKerja: {
+                hiddenInputId: "inputUnitKerja",
+                labelId: "selectedLabel-unitKerja",
+                placeholder: "Pilih Unit Kerja",
+                allowClear: false,
+                options: [
+                    "Divisi Dana & Digital Banking",
+                    "Divisi Jaringan & Pelayanan Cabang",
+                    "Divisi Human Capital",
+                    "Divisi Manajemen Risiko & Anti Fraud",
+                    "Divisi Pemulihan Aset",
+                    "Divisi Umum"
+                ]
+            },
+            cabang: {
+                hiddenInputId: "inputKantorCabang",
+                labelId: "selectedLabel-cabang",
+                placeholder: "-- Pilih Kantor Cabang (Opsional) --",
+                allowClear: true,
+                options: [
+                    "Konvensional",
+                    "Syariah"
+                ]
+            }
+        };
+
+        const pimpinanUsers = [
+            {
+                nik: "19840512001",
+                nama: "Rizky Pratama",
+                unitKerja: "Divisi Dana & Digital Banking",
+                jabatan: "Kepala Divisi Dana & Digital Banking"
+            },
+            {
+                nik: "19860923004",
+                nama: "Hendra Wijaya",
+                unitKerja: "Divisi Jaringan & Pelayanan Cabang",
+                jabatan: "Kepala Divisi Jaringan & Pelayanan Cabang"
+            },
+            {
+                nik: "19821108002",
+                nama: "Wahyu Hidayat",
+                unitKerja: "Divisi Human Capital",
+                jabatan: "Kepala Divisi Human Capital"
+            },
+            {
+                nik: "19850317007",
+                nama: "Anisa Rahmawati",
+                unitKerja: "Divisi Manajemen Risiko & Anti Fraud",
+                jabatan: "Kepala Divisi Manajemen Risiko & Anti Fraud"
+            },
+            {
+                nik: "19830729005",
+                nama: "Fajar Nugroho",
+                unitKerja: "Divisi Pemulihan Aset",
+                jabatan: "Kepala Divisi Pemulihan Aset"
+            },
+            {
+                nik: "19870214009",
+                nama: "Tari Wulandari",
+                unitKerja: "Divisi Umum",
+                jabatan: "Kepala Divisi Umum"
+            }
+        ];
+
+        function renderSimpleOptions(key, filterText = "") {
+            const cfg = dropdownConfig[key];
+            const container = document.getElementById(`optionsList-${key}`);
+            const currentVal = document.getElementById(cfg.hiddenInputId).value;
+            const q = filterText.toLowerCase().trim();
+
+            const filtered = cfg.options.filter(item => item.toLowerCase().includes(q));
+            let html = "";
+
+            if (cfg.allowClear) {
+                html += `
+                    <button type="button" onclick="selectSimpleOption('${key}', '')" class="w-full text-left px-3 py-2 rounded-lg text-xs text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 transition italic">
+                        ${cfg.placeholder}
+                    </button>
+                `;
+            }
+
+            if (filtered.length === 0) {
+                html += `<div class="px-3 py-3 text-center text-xs text-slate-500">Data tidak ditemukan</div>`;
+            } else {
+                html += filtered.map(item => {
+                    const isSelected = currentVal === item;
+                    return `
+                        <button type="button" onclick="selectSimpleOption('${key}', '${item.replace(/'/g, "\\'")}')" class="w-full text-left px-3 py-2 rounded-lg text-xs transition flex items-center justify-between ${isSelected ? 'bg-indigo-600/20 text-indigo-300 font-semibold border border-indigo-500/30' : 'text-slate-200 hover:bg-slate-800/70'}">
+                            <span>${item}</span>
+                            ${isSelected ? '<i class="fa-solid fa-check text-[11px] text-indigo-400"></i>' : ''}
+                        </button>
+                    `;
+                }).join("");
+            }
+
+            container.innerHTML = html;
+        }
+
+        function selectSimpleOption(key, value) {
+            const cfg = dropdownConfig[key];
+            const hiddenInput = document.getElementById(cfg.hiddenInputId);
+            const labelEl = document.getElementById(cfg.labelId);
+
+            hiddenInput.value = value;
+            if (value) {
+                labelEl.textContent = value;
+                labelEl.classList.remove("text-slate-400");
+                labelEl.classList.add("text-slate-100", "font-medium");
+            } else {
+                labelEl.textContent = cfg.placeholder;
+                labelEl.classList.remove("text-slate-100", "font-medium");
+                labelEl.classList.add("text-slate-400");
+            }
+
+            closeAllDropdowns();
+        }
+
+        function filterSimpleOptions(key) {
+            const val = document.getElementById(`searchInput-${key}`).value;
+            renderSimpleOptions(key, val);
+        }
+
+        function renderPimpinanCards(filterText = "") {
+            const container = document.getElementById("optionsList-pimpinan");
+            const selectedNik = document.getElementById("inputPimpinan").value;
+            const q = filterText.toLowerCase().trim();
+
+            const filtered = pimpinanUsers.filter(user =>
+                user.nama.toLowerCase().includes(q) ||
+                user.nik.toLowerCase().includes(q) ||
+                user.unitKerja.toLowerCase().includes(q) ||
+                user.jabatan.toLowerCase().includes(q)
+            );
+
+            let html = `
+                <button type="button" onclick="clearPimpinanSelection(); closeAllDropdowns();" class="w-full text-left px-3 py-2 rounded-lg text-xs text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 transition italic">
+                    -- Kosongkan Pilihan Pimpinan (Opsional) --
+                </button>
+            `;
+
+            if (filtered.length === 0) {
+                html += `<div class="py-6 text-center text-xs text-slate-500">Pegawai tidak ditemukan</div>`;
+                container.innerHTML = html;
+                return;
+            }
+
+            html += filtered.map(user => {
+                const isSelected = selectedNik === user.nik;
+                return `
+                    <div onclick="selectPimpinanUser('${user.nik}')" class="cursor-pointer rounded-xl p-3 border transition ${isSelected ? 'bg-indigo-600/15 border-indigo-500/60' : 'bg-[#131a29] border-slate-800 hover:border-slate-600 hover:bg-[#172033]'}">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="space-y-1 min-w-0">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-semibold text-xs text-white truncate">${user.nama}</span>
+                                    <span class="px-2 py-0.5 rounded bg-slate-800 text-indigo-300 font-mono text-[10px] border border-slate-700/70 shrink-0">NIK: ${user.nik}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-400 truncate">
+                                    <span class="text-slate-500">Unit Kerja:</span> ${user.unitKerja}
+                                </p>
+                                <p class="text-[11px] text-emerald-400 font-medium truncate">
+                                    <span class="text-slate-500 font-normal">Jabatan:</span> ${user.jabatan}
+                                </p>
+                            </div>
+                            ${isSelected ? '<i class="fa-solid fa-circle-check text-indigo-400 text-sm shrink-0 mt-0.5"></i>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            container.innerHTML = html;
+        }
+
+        function selectPimpinanUser(nik) {
+            const user = pimpinanUsers.find(u => u.nik === nik);
+            if (!user) return;
+
+            document.getElementById("inputPimpinan").value = user.nik;
+            const labelEl = document.getElementById("selectedLabel-pimpinan");
+            labelEl.textContent = `${user.nama} (${user.nik}) — ${user.jabatan}`;
+            labelEl.classList.remove("text-slate-400");
+            labelEl.classList.add("text-slate-100", "font-medium");
+
+            document.getElementById("prevNamaPegawai").textContent = user.nama;
+            document.getElementById("prevNik").textContent = user.nik;
+            document.getElementById("prevUnitKerja").textContent = user.unitKerja;
+            document.getElementById("prevJabatan").textContent = user.jabatan;
+            document.getElementById("selectedPimpinanPreview").classList.remove("hidden");
+
+            closeAllDropdowns();
+        }
+
+        function clearPimpinanSelection() {
+            document.getElementById("inputPimpinan").value = "";
+            const labelEl = document.getElementById("selectedLabel-pimpinan");
+            labelEl.textContent = "-- Pilih Pimpinan / Pegawai (Opsional) --";
+            labelEl.classList.remove("text-slate-100", "font-medium");
+            labelEl.classList.add("text-slate-400");
+            document.getElementById("selectedPimpinanPreview").classList.add("hidden");
+        }
+
+        function filterPimpinanCards() {
+            const val = document.getElementById("searchInput-pimpinan").value;
+            renderPimpinanCards(val);
+        }
+
+        function toggleSearchDropdown(key) {
+            const panel = document.getElementById(`dropdownPanel-${key}`);
+            const willOpen = panel.classList.contains("hidden");
+            closeAllDropdowns();
+
+            if (willOpen) {
+                panel.classList.remove("hidden");
+                const searchInput = document.getElementById(`searchInput-${key}`);
+                if (searchInput) {
+                    searchInput.value = "";
+                    searchInput.focus();
+                }
+                if (key === "pimpinan") {
+                    renderPimpinanCards("");
+                } else {
+                    renderSimpleOptions(key, "");
+                }
+            }
+        }
+
+        function closeAllDropdowns() {
+            document.querySelectorAll('[id^="dropdownPanel-"]').forEach(el => {
+                el.classList.add("hidden");
+            });
+        }
+
+        document.addEventListener("click", function(e) {
+            if (!e.target.closest("[data-dropdown]")) {
+                closeAllDropdowns();
+            }
+        });
+
+        // Inisialisasi awal daftar opsi
+        renderSimpleOptions("parent");
+        renderSimpleOptions("direktorat");
+        renderSimpleOptions("unitKerja");
+        renderSimpleOptions("cabang");
+        renderPimpinanCards();
+
+        const statusCheckbox = document.getElementById('inputStatus');
+        const statusLabelText = document.getElementById('statusLabelText');
+
+        statusCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                statusLabelText.textContent = 'Aktif';
+                statusLabelText.className = 'text-xs font-medium text-emerald-400';
+            } else {
+                statusLabelText.textContent = 'Tidak Aktif';
+                statusLabelText.className = 'text-xs font-medium text-slate-400';
+            }
+        });
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const direktorat = document.getElementById('inputDirektorat').value;
+            const unitKerja = document.getElementById('inputUnitKerja').value;
+            const pimpinanNik = document.getElementById('inputPimpinan').value;
+
+            if (!direktorat) {
+                alert("Silakan pilih Direktorat terlebih dahulu.");
+                return;
+            }
+            if (!unitKerja) {
+                alert("Silakan pilih Unit Kerja terlebih dahulu.");
+                return;
+            }
+
+            const pimpinanObj = pimpinanNik ? pimpinanUsers.find(u => u.nik === pimpinanNik) : null;
+            const data = {
+                parent: document.getElementById('inputParent').value || '-',
+                direktorat: direktorat,
+                pimpinan: pimpinanObj ? `${pimpinanObj.nama} (NIK: ${pimpinanObj.nik} - ${pimpinanObj.jabatan})` : '-',
+                unitCode: document.getElementById('inputUnitCode').value.trim(),
+                namaUnit: document.getElementById('inputNamaUnit').value.trim(),
+                unitKerja: unitKerja,
+                kantorCabang: document.getElementById('inputKantorCabang').value || '-',
+                status: statusCheckbox.checked ? 'Aktif' : 'Tidak Aktif'
+            };
+
+            alert(
+                `Data Unit berhasil disimpan!\n\n` +
+                `Parent: ${data.parent}\n` +
+                `Direktorat: ${data.direktorat}\n` +
+                `Pimpinan: ${data.pimpinan}\n` +
+                `Unit Code: ${data.unitCode}\n` +
+                `Nama Unit: ${data.namaUnit}\n` +
+                `Unit Kerja: ${data.unitKerja}\n` +
+                `Kantor Cabang: ${data.kantorCabang}\n` +
+                `Status: ${data.status}`
+            );
+
+            window.location.href = 'struktur-organisasi.html';
+        }
+    </script>
+</body>
+</html>

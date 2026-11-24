@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Tambah Assessment</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container" class="shrink-0"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <a href="self-assessment.html" class="text-slate-500 hover:text-slate-300 transition">Self-Assessment</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="text-slate-500">ROC</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">List of Compliance</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span id="rocContextBadge" class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-300 border border-blue-500/30">
+                        <i class="fa-solid fa-building mr-1.5 text-[10px]"></i>
+                        <span id="rocContextUnit">Semua Unit</span>
+                    </span>
+                    <span class="hidden lg:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+                
+                <!-- Page Header & Tombol Add Compliance -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <div class="flex items-center space-x-2.5">
+                            <a
+                                href="self-assessment.html"
+                                title="Kembali ke Self-Assessment ROC"
+                                class="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition"
+                            >
+                                <i class="fa-solid fa-arrow-left text-xs"></i>
+                            </a>
+                            <h2 class="text-xl font-bold text-white tracking-wide">List of Compliance</h2>
+                        </div>
+                        <p id="rocSubtitle" class="text-xs text-slate-400 mt-1">Kelola daftar kepatuhan regulasi, indikator, dokumen sub-indikator terunggah, temuan audit, dan progress penyelesaian.</p>
+                    </div>
+                    <a
+                        id="btnAddCompliance"
+                        href="tambah-compilance.html"
+                        class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold transition shadow-lg shadow-blue-600/20 inline-flex items-center space-x-2 w-fit shrink-0"
+                    >
+                        <i class="fa-solid fa-plus text-[11px]"></i>
+                        <span>Add Compliance</span>
+                    </a>
+                </div>
+
+                <!-- Fitur Pencarian & Filter -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        <!-- Pencarian -->
+                        <div class="md:col-span-8">
+                            <label for="searchCompliance" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-magnifying-glass text-blue-400 text-[11px]"></i>
+                                <span>Pencarian</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-2.5 text-xs text-slate-500">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    id="searchCompliance"
+                                    oninput="renderComplianceTable()"
+                                    placeholder="Cari berdasarkan nama regulasi atau nama indikator..."
+                                    class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Filter Status Progress -->
+                        <div class="md:col-span-4">
+                            <label for="filterComplianceProgress" class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-bars-progress text-indigo-400 text-[11px]"></i>
+                                <span>Filter Progress</span>
+                            </label>
+                            <select
+                                id="filterComplianceProgress"
+                                onchange="renderComplianceTable()"
+                                class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                            >
+                                <option value="">Semua Progress</option>
+                                <option value="complete">Selesai (100%)</option>
+                                <option value="in-progress">Sedang Berjalan (1% - 99%)</option>
+                                <option value="not-started">Belum Dimulai (0%)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabel List of Compliance -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between gap-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-clipboard-list text-blue-500 text-sm"></i>
+                            <h3 class="text-sm font-semibold text-white tracking-wide">Tabel List of Compliance</h3>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button
+                                type="button"
+                                id="btnSubmitKepatuhan"
+                                onclick="handleSubmitKepatuhan()"
+                                disabled
+                                class="px-3.5 py-2 rounded-lg text-xs font-semibold transition inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 disabled:bg-slate-800 disabled:text-slate-500 disabled:border disabled:border-slate-700/60 disabled:shadow-none disabled:cursor-not-allowed"
+                            >
+                                <i class="fa-solid fa-paper-plane text-[11px]"></i>
+                                <span id="btnSubmitKepatuhanLabel">Submit Kepatuhan (0)</span>
+                            </button>
+                            <span id="totalComplianceCount" class="text-xs text-slate-400">0 Data</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800/90 bg-[#101624] text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                    <th class="py-3.5 px-4 w-10 text-center">
+                                        <input
+                                            type="checkbox"
+                                            id="selectAllCompliance"
+                                            onchange="toggleSelectAllCompliance(this.checked)"
+                                            aria-label="Pilih semua kepatuhan"
+                                            class="w-4 h-4 rounded border-slate-600 bg-[#131a29] text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                        >
+                                    </th>
+                                    <th class="py-3.5 px-6">Kode</th>
+                                    <th class="py-3.5 px-6">Nama Regulasi</th>
+                                    <th class="py-3.5 px-6">Nama Indikator</th>
+                                    <th class="py-3.5 px-6 text-center">Sub Indikator Terupload</th>
+                                    <th class="py-3.5 px-6 text-center">Jumlah Temuan Audit</th>
+                                    <th class="py-3.5 px-6 w-64">Progress</th>
+                                    <th class="py-3.5 px-6 text-center">Status</th>
+                                    <th class="py-3.5 px-6 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="complianceTableBody" class="divide-y divide-slate-800/80 text-xs">
+                                <!-- Di-render otomatis oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Modal Edit Compliance -->
+    <div id="complianceFormModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-lg p-6 shadow-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="complianceFormModalTitle" class="text-sm font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                    <span>Edit Compliance</span>
+                </h3>
+                <button type="button" onclick="closeComplianceFormModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="formCompliance" onsubmit="handleSaveCompliance(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="editComplianceId">
+
+                <div class="space-y-1.5">
+                    <label for="inputKodeKompetensi" class="block font-semibold text-slate-300">Kode Kompetensi <span class="text-rose-400">*</span></label>
+                    <input
+                        type="text"
+                        id="inputKodeKompetensi"
+                        required
+                        placeholder="Format: UNIT-TAHUN-PERIODE-ID (contoh: SKMR-26-Q1-001)"
+                        class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 font-mono placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                    >
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputNamaRegulasi" class="block font-semibold text-slate-300">Nama Regulasi <span class="text-rose-400">*</span></label>
+                    <input
+                        type="text"
+                        id="inputNamaRegulasi"
+                        required
+                        placeholder="Contoh: POJK No. 17/POJK.03/2014 tentang Manajemen Risiko"
+                        class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                    >
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputNamaIndikator" class="block font-semibold text-slate-300">Nama Indikator <span class="text-rose-400">*</span></label>
+                    <input
+                        type="text"
+                        id="inputNamaIndikator"
+                        required
+                        placeholder="Contoh: Pelaporan Profil Risiko Triwulanan"
+                        class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                    >
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label for="inputSubTerupload" class="block font-semibold text-slate-300">Sub Indikator Terupload <span class="text-rose-400">*</span></label>
+                        <input
+                            type="number"
+                            id="inputSubTerupload"
+                            min="0"
+                            required
+                            placeholder="Contoh: 4"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="inputTotalSub" class="block font-semibold text-slate-300">Total Sub Indikator <span class="text-rose-400">*</span></label>
+                        <input
+                            type="number"
+                            id="inputTotalSub"
+                            min="1"
+                            required
+                            placeholder="Contoh: 5"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label for="inputTemuanAudit" class="block font-semibold text-slate-300">Jumlah Temuan Audit <span class="text-rose-400">*</span></label>
+                        <input
+                            type="number"
+                            id="inputTemuanAudit"
+                            min="0"
+                            required
+                            placeholder="Contoh: 0"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="inputProgressCompliance" class="block font-semibold text-slate-300">Progress (%) <span class="text-rose-400">*</span></label>
+                        <input
+                            type="number"
+                            id="inputProgressCompliance"
+                            min="0"
+                            max="100"
+                            required
+                            placeholder="0 - 100"
+                            class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                        >
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputStatusCompliance" class="block font-semibold text-slate-300">Status <span class="text-rose-400">*</span></label>
+                    <select
+                        id="inputStatusCompliance"
+                        class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition"
+                    >
+                        <option value="Draft">Draft</option>
+                        <option value="Submitted">Submitted</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-800">
+                    <button type="button" onclick="closeComplianceFormModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium transition">
+                        Batal
+                    </button>
+                    <button type="submit" id="btnSubmitCompliance" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition shadow-lg shadow-blue-600/20">
+                        Update Compliance
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal View Detail Compliance -->
+    <div id="viewComplianceModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-lg p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-eye text-blue-400"></i>
+                    <span>Detail Compliance</span>
+                </h3>
+                <button type="button" onclick="closeViewComplianceModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="viewComplianceModalBody" class="space-y-3 text-xs text-slate-300">
+                <!-- Diisi oleh JavaScript -->
+            </div>
+            <div class="flex items-center justify-end pt-3 border-t border-slate-800">
+                <button type="button" onclick="closeViewComplianceModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Delete Compliance -->
+    <div id="deleteComplianceModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+            <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                <div class="w-9 h-9 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-white">Hapus Data Compliance</h3>
+                    <p class="text-[11px] text-slate-400">Tindakan ini akan menghapus data dari daftar.</p>
+                </div>
+            </div>
+            <p id="deleteComplianceMessage" class="text-xs text-slate-300 leading-relaxed"></p>
+            <div class="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-800">
+                <button type="button" onclick="closeDeleteComplianceModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition">
+                    Batal
+                </button>
+                <button type="button" onclick="confirmDeleteCompliance()" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold transition">
+                    Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../sidebar.js"></script>
+
+    <!-- Script List of Compliance -->
+    <script>
+        let complianceDataset = [
+            {
+                id: "001",
+                kodeKompetensi: "SKMR-26-Q1-001",
+                tahun: "26",
+                periode: "Q1",
+                namaRegulasi: "POJK No. 17/POJK.03/2014 tentang Manajemen Risiko",
+                namaIndikator: "Pelaporan Profil Risiko & Kepatuhan Berkala",
+                subTerupload: 5,
+                totalSub: 5,
+                jumlahTemuanAudit: 0,
+                progress: 100,
+                status: "Submitted",
+                selected: false
+            },
+            {
+                id: "002",
+                kodeKompetensi: "SKMR-26-Q1-002",
+                tahun: "26",
+                periode: "Q1",
+                namaRegulasi: "SEOJK No. 15/SEOJK.03/2015 tentang Tata Kelola & Kepatuhan",
+                namaIndikator: "Kelengkapan Dokumen Bukti (Evidence) Unit Kerja",
+                subTerupload: 3,
+                totalSub: 4,
+                jumlahTemuanAudit: 1,
+                progress: 75,
+                status: "Draft",
+                selected: false
+            },
+            {
+                id: "003",
+                kodeKompetensi: "SKMR-26-Q1-003",
+                tahun: "26",
+                periode: "Q1",
+                namaRegulasi: "UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi",
+                namaIndikator: "Pengendalian Akses & Keamanan Dokumen Kepatuhan",
+                subTerupload: 2,
+                totalSub: 5,
+                jumlahTemuanAudit: 2,
+                progress: 40,
+                status: "Draft",
+                selected: false
+            },
+            {
+                id: "004",
+                kodeKompetensi: "SKMR-26-Q1-004",
+                tahun: "26",
+                periode: "Q1",
+                namaRegulasi: "SOP Internal Kepatuhan & Tindak Lanjut Temuan Audit",
+                namaIndikator: "Monitoring Tindak Lanjut Rekomendasi Audit",
+                subTerupload: 0,
+                totalSub: 3,
+                jumlahTemuanAudit: 3,
+                progress: 0,
+                status: "Draft",
+                selected: false
+            }
+        ];
+
+        let pendingDeleteComplianceId = null;
+
+        function extractKodeUnit(unitName) {
+            if (!unitName) return "UNIT";
+            const matchInParens = unitName.match(/\(([^)]+)\)/);
+            if (matchInParens && matchInParens[1]) {
+                return matchInParens[1].trim().toUpperCase().replace(/[^A-Z0-9]+/g, "");
+            }
+            const words = unitName
+                .replace(/[^a-zA-Z0-9\s]/g, " ")
+                .split(/\s+/)
+                .filter(w => w && !["dan", "divisi", "satuan", "kerja", "unit"].includes(w.toLowerCase()));
+            if (words.length === 1) {
+                return words[0].slice(0, 6).toUpperCase();
+            }
+            return words.map(w => w[0]).join("").toUpperCase() || "UNIT";
+        }
+
+        function normalizeTahunSingkat(tahunVal) {
+            const cleaned = String(tahunVal || "26").trim().replace(/[^0-9]/g, "");
+            if (!cleaned) return "26";
+            return cleaned.length >= 4 ? cleaned.slice(-2) : cleaned.slice(-2).padStart(2, "0");
+        }
+
+        function normalizePeriodeKode(periodeVal) {
+            const cleaned = String(periodeVal || "Q1").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+            return cleaned || "Q1";
+        }
+
+        function formatKodeKompetensi(item, unitName, tahunSingkat = "26", periodeKode = "Q1") {
+            const params = new URLSearchParams(window.location.search);
+            const kodeUnit = extractKodeUnit(unitName || params.get("unit") || "Satuan Kerja Manajemen Risiko (SKMR)");
+            const rawCode = String(item.kodeKompetensi || "").trim();
+            const parts = rawCode.split("-").filter(p => p && p.toUpperCase() !== "CMP");
+
+            let tahunPart = normalizeTahunSingkat(params.get("tahun") || item.tahun || tahunSingkat);
+            let periodePart = normalizePeriodeKode(params.get("periode") || item.periode || periodeKode);
+            let idPart = String(item.id || "001").trim();
+
+            if (parts.length >= 4) {
+                tahunPart = normalizeTahunSingkat(params.get("tahun") || parts[1] || tahunPart);
+                periodePart = normalizePeriodeKode(params.get("periode") || parts[2] || periodePart);
+                idPart = parts.slice(3).join("-") || idPart;
+            } else if (parts.length === 3) {
+                const seg1 = parts[1];
+                const seg2 = parts[2];
+                if (/^Q[1-4]$|^TW[1-4]$|^P[0-9]+$/i.test(seg1)) {
+                    periodePart = normalizePeriodeKode(params.get("periode") || seg1);
+                    idPart = seg2 || idPart;
+                } else {
+                    tahunPart = normalizeTahunSingkat(params.get("tahun") || seg1);
+                    idPart = seg2 || idPart;
+                }
+            } else if (parts.length === 2) {
+                idPart = parts[1] || idPart;
+            }
+
+            return `${kodeUnit}-${tahunPart}-${periodePart}-${idPart}`;
+        }
+
+        function initRocContext() {
+            const params = new URLSearchParams(window.location.search);
+            const rocId = params.get("id");
+            const unitName = params.get("unit");
+            const addBtn = document.getElementById("btnAddCompliance");
+
+            const query = new URLSearchParams();
+            if (rocId) query.set("id", rocId);
+            if (unitName) query.set("unit", unitName);
+            const qs = query.toString();
+
+            if (addBtn) {
+                addBtn.href = qs ? `tambah-compilance.html?${qs}` : "tambah-compilance.html";
+            }
+
+            if (unitName) {
+                document.getElementById("rocContextUnit").textContent = unitName;
+                document.getElementById("rocSubtitle").textContent =
+                    `Daftar kepatuhan untuk unit ${unitName}${rocId ? ` (${rocId})` : ""} — pantau regulasi, indikator, dokumen sub-indikator, temuan audit, dan progress.`;
+            }
+        }
+
+        function getProgressBarColor(progress) {
+            if (progress >= 100) return "bg-emerald-500";
+            if (progress >= 50) return "bg-blue-500";
+            if (progress > 0) return "bg-amber-400";
+            return "bg-slate-600";
+        }
+
+        function getProgressTextColor(progress) {
+            if (progress >= 100) return "text-emerald-400";
+            if (progress >= 50) return "text-blue-400";
+            if (progress > 0) return "text-amber-400";
+            return "text-slate-400";
+        }
+
+        function renderStatusBadge(status) {
+            if (status === "Submitted") {
+                return `
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                        Submitted
+                    </span>
+                `;
+            }
+            return `
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                    Draft
+                </span>
+            `;
+        }
+
+        function updateSubmitComplianceButton() {
+            const selectedCount = complianceDataset.filter(item => item.selected).length;
+            const btn = document.getElementById("btnSubmitKepatuhan");
+            const label = document.getElementById("btnSubmitKepatuhanLabel");
+            const selectAll = document.getElementById("selectAllCompliance");
+
+            if (btn) btn.disabled = selectedCount === 0;
+            if (label) label.textContent = `Submit Kepatuhan (${selectedCount})`;
+
+            if (selectAll) {
+                const total = complianceDataset.length;
+                selectAll.checked = total > 0 && selectedCount === total;
+                selectAll.indeterminate = selectedCount > 0 && selectedCount < total;
+            }
+        }
+
+        function toggleSelectCompliance(id, checked) {
+            const idx = complianceDataset.findIndex(item => item.id === id);
+            if (idx !== -1) {
+                complianceDataset[idx].selected = Boolean(checked);
+            }
+            renderComplianceTable();
+        }
+
+        function toggleSelectAllCompliance(checked) {
+            complianceDataset = complianceDataset.map(item => ({
+                ...item,
+                selected: Boolean(checked)
+            }));
+            renderComplianceTable();
+        }
+
+        function handleSubmitKepatuhan() {
+            const selectedItems = complianceDataset.filter(item => item.selected);
+            if (selectedItems.length === 0) return;
+
+            complianceDataset = complianceDataset.map(item => item.selected
+                ? { ...item, status: "Submitted", selected: false }
+                : item
+            );
+            renderComplianceTable();
+        }
+
+        function renderComplianceTable() {
+            const params = new URLSearchParams(window.location.search);
+            const currentUnitName = params.get("unit") || "Satuan Kerja Manajemen Risiko (SKMR)";
+            const tbody = document.getElementById("complianceTableBody");
+            const countEl = document.getElementById("totalComplianceCount");
+            const keyword = (document.getElementById("searchCompliance")?.value || "").trim().toLowerCase();
+            const selectedProgress = document.getElementById("filterComplianceProgress")?.value || "";
+
+            const filtered = complianceDataset.filter(item => {
+                const matchKeyword = !keyword ||
+                    String(item.namaRegulasi || "").toLowerCase().includes(keyword) ||
+                    String(item.namaIndikator || "").toLowerCase().includes(keyword);
+
+                let matchProgress = true;
+                if (selectedProgress === "complete") {
+                    matchProgress = item.progress === 100;
+                } else if (selectedProgress === "in-progress") {
+                    matchProgress = item.progress > 0 && item.progress < 100;
+                } else if (selectedProgress === "not-started") {
+                    matchProgress = item.progress === 0;
+                }
+
+                return matchKeyword && matchProgress;
+            });
+
+            countEl.textContent = `${filtered.length} Data`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="py-8 px-6 text-center text-slate-500">
+                            Tidak ada data compliance yang sesuai dengan pencarian atau filter.
+                        </td>
+                    </tr>
+                `;
+                updateSubmitComplianceButton();
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const pct = Math.max(0, Math.min(100, Number(item.progress) || 0));
+                const barColor = getProgressBarColor(pct);
+                const textColor = getProgressTextColor(pct);
+                const auditBadgeClass = item.jumlahTemuanAudit > 0
+                    ? "bg-rose-500/15 text-rose-400 border-rose-500/30"
+                    : "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
+
+                return `
+                    <tr class="${item.selected ? "bg-blue-500/5" : "hover:bg-[#131a29]/60"} transition">
+                        <td class="py-4 px-4 text-center">
+                            <input
+                                type="checkbox"
+                                ${item.selected ? "checked" : ""}
+                                onchange="toggleSelectCompliance('${item.id}', this.checked)"
+                                aria-label="Pilih ${item.namaIndikator}"
+                                class="w-4 h-4 rounded border-slate-600 bg-[#131a29] text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            >
+                        </td>
+                        <td class="py-4 px-6 font-mono text-blue-400 font-semibold whitespace-nowrap">${formatKodeKompetensi(item, currentUnitName, "26")}</td>
+                        <td class="py-4 px-6 font-semibold text-white">${item.namaRegulasi}</td>
+                        <td class="py-4 px-6 text-slate-200">${item.namaIndikator}</td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                                ${item.subTerupload} / ${item.totalSub} Sub
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold border ${auditBadgeClass}">
+                                ${item.jumlahTemuanAudit} Temuan
+                            </span>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="space-y-1.5">
+                                <div class="flex items-center justify-between text-[11px] font-semibold">
+                                    <span class="text-slate-400">Progress</span>
+                                    <span class="${textColor}">${pct}%</span>
+                                </div>
+                                <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60">
+                                    <div class="${barColor} h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 text-center">${renderStatusBadge(item.status || "Draft")}</td>
+                        <td class="py-4 px-6 text-center">
+                            <div class="inline-flex items-center justify-center space-x-1.5">
+                                <button
+                                    type="button"
+                                    onclick="openViewComplianceModal('${item.id}')"
+                                    title="View"
+                                    aria-label="View"
+                                    class="p-2 rounded-lg bg-slate-800/80 hover:bg-blue-500/20 text-slate-300 hover:text-blue-400 border border-slate-700/60 transition"
+                                >
+                                    <i class="fa-solid fa-eye text-xs"></i>
+                                </button>
+                                ${(item.status || "Draft") !== "Submitted" ? `
+                                <button
+                                    type="button"
+                                    onclick="openEditComplianceModal('${item.id}')"
+                                    title="Edit"
+                                    aria-label="Edit"
+                                    class="p-2 rounded-lg bg-slate-800/80 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 border border-slate-700/60 transition"
+                                >
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    onclick="openDeleteComplianceModal('${item.id}')"
+                                    title="Delete"
+                                    aria-label="Delete"
+                                    class="p-2 rounded-lg bg-slate-800/80 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 border border-slate-700/60 transition"
+                                >
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                                ` : ""}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+
+            updateSubmitComplianceButton();
+        }
+
+        function openEditComplianceModal(id) {
+            const item = complianceDataset.find(row => row.id === id);
+            if (!item) return;
+
+            const params = new URLSearchParams(window.location.search);
+            const currentUnitName = params.get("unit") || "Satuan Kerja Manajemen Risiko (SKMR)";
+
+            document.getElementById("editComplianceId").value = item.id;
+            document.getElementById("inputKodeKompetensi").value = formatKodeKompetensi(item, currentUnitName, "26");
+            document.getElementById("inputNamaRegulasi").value = item.namaRegulasi;
+            document.getElementById("inputNamaIndikator").value = item.namaIndikator;
+            document.getElementById("inputSubTerupload").value = item.subTerupload;
+            document.getElementById("inputTotalSub").value = item.totalSub;
+            document.getElementById("inputTemuanAudit").value = item.jumlahTemuanAudit;
+            document.getElementById("inputProgressCompliance").value = item.progress;
+            document.getElementById("inputStatusCompliance").value = item.status || "Draft";
+
+            document.getElementById("complianceFormModalTitle").innerHTML = `
+                <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                <span>Edit Compliance</span>
+            `;
+            document.getElementById("btnSubmitCompliance").textContent = "Update Compliance";
+            document.getElementById("complianceFormModal").classList.remove("hidden");
+        }
+
+        function closeComplianceFormModal() {
+            document.getElementById("complianceFormModal").classList.add("hidden");
+        }
+
+        function handleSaveCompliance(event) {
+            event.preventDefault();
+            const editId = document.getElementById("editComplianceId").value;
+            const kodeKompetensi = document.getElementById("inputKodeKompetensi").value.trim();
+            const namaRegulasi = document.getElementById("inputNamaRegulasi").value.trim();
+            const namaIndikator = document.getElementById("inputNamaIndikator").value.trim();
+            const totalSub = Math.max(1, parseInt(document.getElementById("inputTotalSub").value, 10) || 1);
+            const subTerupload = Math.max(0, Math.min(totalSub, parseInt(document.getElementById("inputSubTerupload").value, 10) || 0));
+            const jumlahTemuanAudit = Math.max(0, parseInt(document.getElementById("inputTemuanAudit").value, 10) || 0);
+            const progress = Math.max(0, Math.min(100, parseInt(document.getElementById("inputProgressCompliance").value, 10) || 0));
+            const status = document.getElementById("inputStatusCompliance").value || "Draft";
+
+            if (!namaRegulasi || !namaIndikator || !editId) return;
+
+            const idx = complianceDataset.findIndex(row => row.id === editId);
+            if (idx !== -1) {
+                complianceDataset[idx] = {
+                    ...complianceDataset[idx],
+                    kodeKompetensi: kodeKompetensi || complianceDataset[idx].kodeKompetensi,
+                    namaRegulasi,
+                    namaIndikator,
+                    subTerupload,
+                    totalSub,
+                    jumlahTemuanAudit,
+                    progress,
+                    status
+                };
+            }
+
+            renderComplianceTable();
+            closeComplianceFormModal();
+        }
+
+        function openViewComplianceModal(id) {
+            const item = complianceDataset.find(row => row.id === id);
+            if (!item) return;
+
+            const pct = Math.max(0, Math.min(100, Number(item.progress) || 0));
+            const barColor = getProgressBarColor(pct);
+            const textColor = getProgressTextColor(pct);
+
+            const params = new URLSearchParams(window.location.search);
+            const currentUnitName = params.get("unit") || "Satuan Kerja Manajemen Risiko (SKMR)";
+            const formattedKode = formatKodeKompetensi(item, currentUnitName, "26");
+
+            document.getElementById("viewComplianceModalBody").innerHTML = `
+                <p><span class="text-slate-400">Kode Kompetensi:</span> <strong class="font-mono text-blue-400">${formattedKode}</strong></p>
+                <p><span class="text-slate-400">ID:</span> <strong class="text-blue-400">${item.id}</strong></p>
+                <p><span class="text-slate-400">Nama Regulasi:</span> <strong class="text-white">${item.namaRegulasi}</strong></p>
+                <p><span class="text-slate-400">Nama Indikator:</span> <strong class="text-slate-200">${item.namaIndikator}</strong></p>
+                <p><span class="text-slate-400">Sub Indikator Terupload Dokumen:</span> <strong class="text-blue-400">${item.subTerupload} dari ${item.totalSub} Sub Indikator</strong></p>
+                <p><span class="text-slate-400">Jumlah Temuan Audit:</span> <strong class="${item.jumlahTemuanAudit > 0 ? "text-rose-400" : "text-emerald-400"}">${item.jumlahTemuanAudit} Temuan</strong></p>
+                <div class="space-y-1.5 pt-1">
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-slate-400">Progress:</span>
+                        <strong class="${textColor}">${pct}%</strong>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60">
+                        <div class="${barColor} h-full rounded-full" style="width: ${pct}%"></div>
+                    </div>
+                </div>
+                <p class="pt-1"><span class="text-slate-400">Status:</span> <strong class="text-slate-200">${item.status || "Draft"}</strong></p>
+            `;
+            document.getElementById("viewComplianceModal").classList.remove("hidden");
+        }
+
+        function closeViewComplianceModal() {
+            document.getElementById("viewComplianceModal").classList.add("hidden");
+        }
+
+        function openDeleteComplianceModal(id) {
+            const item = complianceDataset.find(row => row.id === id);
+            if (!item) return;
+            pendingDeleteComplianceId = id;
+            document.getElementById("deleteComplianceMessage").innerHTML =
+                `Apakah Anda yakin ingin menghapus indikator <strong class="text-white">${item.namaIndikator}</strong> pada regulasi <strong class="text-blue-300">${item.namaRegulasi}</strong>?`;
+            document.getElementById("deleteComplianceModal").classList.remove("hidden");
+        }
+
+        function closeDeleteComplianceModal() {
+            pendingDeleteComplianceId = null;
+            document.getElementById("deleteComplianceModal").classList.add("hidden");
+        }
+
+        function confirmDeleteCompliance() {
+            if (!pendingDeleteComplianceId) return;
+            complianceDataset = complianceDataset.filter(row => row.id !== pendingDeleteComplianceId);
+            renderComplianceTable();
+            closeDeleteComplianceModal();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            initRocContext();
+            renderComplianceTable();
+        });
+    </script>
+</body>
+</html>

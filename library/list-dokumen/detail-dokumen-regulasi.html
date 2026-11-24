@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Detail Dokumen Regulasi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">Library</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <a href="list-dokumen.html" class="text-slate-500 hover:text-slate-300 transition">List Dokumen</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Detail Dokumen Regulasi</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace (Full Kiri Kanan dengan padding px-8) -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+                
+                <!-- Back Button & Header Title -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-wide">Detail Dokumen Regulasi</h2>
+                        <p class="text-xs text-slate-400 mt-1">Informasi regulasi, total indikator dan dokumen, serta daftar indikator kepatuhan terkait.</p>
+                    </div>
+                    <a href="list-dokumen.html" class="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center space-x-2 w-fit shrink-0">
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                        <span>Kembali</span>
+                    </a>
+                </div>
+
+                <!-- 1. Informasi Nama Regulasi, Nomor Regulasi, Total Indicator, dan Total Dokumen -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden w-full">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-scale-balanced text-blue-500 text-sm"></i>
+                        <h3 class="text-sm font-semibold text-white tracking-wide">Informasi Regulasi</h3>
+                    </div>
+
+                    <div class="p-6 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-1.5">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Nama Regulasi</span>
+                                <p id="detailNamaRegulasi" class="text-sm font-bold text-white leading-snug">Penerapan Manajemen Risiko dan Pelaporan Berkala Sektor Jasa Keuangan</p>
+                            </div>
+                            <div class="space-y-1.5">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Nomor Regulasi</span>
+                                <p id="detailNomorRegulasi" class="text-sm font-semibold text-blue-400">POJK/No.12/2026</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-800/80">
+                            <div class="bg-[#131a29] border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                                <div>
+                                    <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Indicator</span>
+                                    <p id="detailTotalIndicator" class="text-xl font-bold text-emerald-400 mt-1">0</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                    <i class="fa-solid fa-chart-pie text-sm"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-[#131a29] border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                                <div>
+                                    <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Dokumen</span>
+                                    <p id="detailTotalDokumen" class="text-xl font-bold text-indigo-400 mt-1">0</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                    <i class="fa-solid fa-file-lines text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Label Daftar Indikator Kepatuhan Regulasi & Fitur Pencarian Indikator -->
+                <div class="space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Daftar Indikator Kepatuhan Regulasi</h3>
+                    </div>
+
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl">
+                        <label for="searchIndikator" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                            Pencarian Indikator
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-2.5 text-xs text-slate-500">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input
+                                type="text"
+                                id="searchIndikator"
+                                oninput="renderIndikatorCards()"
+                                placeholder="Cari berdasarkan nomor indikator, nama indikator, atau deskripsi indikator..."
+                                class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- 3. Card List Indikator (1 Baris 1 Card, Berdempetan) -->
+                    <div id="indikatorCardList" class="grid grid-cols-1 gap-0 bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                        <!-- Di-render otomatis oleh JavaScript -->
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../sidebar.js"></script>
+
+    <!-- Script Detail Regulasi, Pencarian & Render Card Indikator -->
+    <script>
+        const indikatorRegulasiData = {
+            "POJK/No.12/2026": {
+                namaRegulasi: "Penerapan Manajemen Risiko dan Pelaporan Berkala Sektor Jasa Keuangan",
+                indikator: [
+                    {
+                        nomorIndikator: "IND-MR-01",
+                        namaIndikator: "Pengawasan Aktif Direksi dan Dewan Komisaris terhadap Manajemen Risiko",
+                        deskripsiIndikator: "Menilai keefektifan wewenang, tanggung jawab, serta evaluasi berkala Direksi dan Dewan Komisaris dalam mengarahkan penerapan manajemen risiko.",
+                        jumlahSubIndikator: 3,
+                        jumlahDokumen: 3
+                    },
+                    {
+                        nomorIndikator: "IND-MR-02",
+                        namaIndikator: "Kecukupan Kebijakan, Prosedur, dan Penetapan Limit Risiko",
+                        deskripsiIndikator: "Memastikan ketersediaan kebijakan dan prosedur operasional baku serta penetapan limit risiko yang selaras dengan selera dan toleransi risiko.",
+                        jumlahSubIndikator: 2,
+                        jumlahDokumen: 2
+                    },
+                    {
+                        nomorIndikator: "IND-MR-03",
+                        namaIndikator: "Proses Identifikasi, Pengukuran, Pemantauan, dan Pengendalian Risiko",
+                        deskripsiIndikator: "Mengukur keandalan mekanisme identifikasi eksposur, pengukuran risiko, pemantauan portofolio, serta mitigasi risiko secara berkelanjutan.",
+                        jumlahSubIndikator: 4,
+                        jumlahDokumen: 2
+                    },
+                    {
+                        nomorIndikator: "IND-MR-04",
+                        namaIndikator: "Sistem Informasi Manajemen Risiko dan Pelaporan Berkala",
+                        deskripsiIndikator: "Menilai ketepatan, kelengkapan, dan integritas data sistem informasi manajemen risiko serta penyampaian laporan berkala kepada otoritas.",
+                        jumlahSubIndikator: 2,
+                        jumlahDokumen: 2
+                    }
+                ]
+            },
+            "SE-BI/24/DKMP": {
+                namaRegulasi: "Ketentuan Pelaporan Lalu Lintas Devisa dan Pemantauan Kepatuhan",
+                indikator: [
+                    {
+                        nomorIndikator: "IND-DV-01",
+                        namaIndikator: "Ketepatan Waktu Penyampaian Laporan Lalu Lintas Devisa",
+                        deskripsiIndikator: "Memantau kepatuhan jadwal pelaporan lalu lintas devisa sesuai ketentuan periode pelaporan yang ditetapkan oleh Bank Indonesia.",
+                        jumlahSubIndikator: 2,
+                        jumlahDokumen: 2
+                    },
+                    {
+                        nomorIndikator: "IND-DV-02",
+                        namaIndikator: "Validasi dan Kelengkapan Dokumen Pendukung Transaksi Devisa",
+                        deskripsiIndikator: "Memastikan seluruh dokumen pendukung transaksi devisa telah diverifikasi dan tersimpan lengkap sesuai persyaratan kepatuhan.",
+                        jumlahSubIndikator: 3,
+                        jumlahDokumen: 2
+                    },
+                    {
+                        nomorIndikator: "IND-DV-03",
+                        namaIndikator: "Rekonsiliasi Data Pelaporan dengan Catatan Operasional",
+                        deskripsiIndikator: "Memeriksa kesesuaian data yang dilaporkan dengan pembukuan dan catatan transaksi operasional unit terkait.",
+                        jumlahSubIndikator: 2,
+                        jumlahDokumen: 2
+                    }
+                ]
+            },
+            "POJK/No.05/2026": {
+                namaRegulasi: "Tata Kelola Terintegrasi dan Pengendalian Internal Bank Umum",
+                indikator: [
+                    {
+                        nomorIndikator: "IND-TK-01",
+                        namaIndikator: "Pelaksanaan Struktur dan Infrastruktur Tata Kelola Terintegrasi",
+                        deskripsiIndikator: "Menilai kelengkapan struktur komite, pedoman tata kelola, serta pembagian tugas dan tanggung jawab antar unit kerja.",
+                        jumlahSubIndikator: 3,
+                        jumlahDokumen: 3
+                    },
+                    {
+                        nomorIndikator: "IND-TK-02",
+                        namaIndikator: "Evaluasi Fungsi Kepatuhan dan Pengendalian Internal Berkala",
+                        deskripsiIndikator: "Mengukur pelaksanaan reviu kepatuhan dan pengendalian internal serta pemantauan temuan audit secara berkala.",
+                        jumlahSubIndikator: 2,
+                        jumlahDokumen: 3
+                    },
+                    {
+                        nomorIndikator: "IND-TK-03",
+                        namaIndikator: "Dokumentasi Risalah Komite dan Tindak Lanjut Rekomendasi",
+                        deskripsiIndikator: "Memastikan dokumentasi keputusan rapat, risalah, dan tindak lanjut rekomendasi komite tercatat serta dapat ditelusuri.",
+                        jumlahSubIndikator: 3,
+                        jumlahDokumen: 5
+                    }
+                ]
+            },
+            "SK-DIR/014/2026": {
+                namaRegulasi: "Kebijakan Internal Pengelolaan Arsip Dokumen & Bukti Kepatuhan",
+                indikator: [
+                    {
+                        nomorIndikator: "IND-AR-01",
+                        namaIndikator: "Standar Penamaan, Klasifikasi, dan Retensi Dokumen Kepatuhan",
+                        deskripsiIndikator: "Menilai penerapan standar penamaan berkas, pengelompokan dokumen, dan masa retensi arsip kepatuhan sesuai kebijakan internal.",
+                        jumlahSubIndikator: 2,
+                        jumlahDokumen: 3
+                    },
+                    {
+                        nomorIndikator: "IND-AR-02",
+                        namaIndikator: "Keterlacakan dan Keamanan Arsip Dokumen Bukti (Evidence)",
+                        deskripsiIndikator: "Memastikan dokumen bukti (evidence) dapat diakses dengan cepat, aman, dan terhubung tepat ke indikator terkait.",
+                        jumlahSubIndikator: 2,
+                        jumlahDokumen: 2
+                    }
+                ]
+            }
+        };
+
+        let activeNomorRegulasi = "POJK/No.12/2026";
+        let activeIndikatorList = [];
+
+        function initDetailRegulasi() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const kodeParam = (urlParams.get("kode") || "").trim();
+            const namaParam = (urlParams.get("nama") || "").trim();
+
+            activeNomorRegulasi = kodeParam || "POJK/No.12/2026";
+            const matched = indikatorRegulasiData[activeNomorRegulasi];
+
+            const namaRegulasi = namaParam || (matched ? matched.namaRegulasi : "Penerapan Manajemen Risiko dan Pelaporan Berkala Sektor Jasa Keuangan");
+            activeIndikatorList = matched ? matched.indikator : indikatorRegulasiData["POJK/No.12/2026"].indikator;
+
+            document.getElementById("detailNomorRegulasi").textContent = activeNomorRegulasi;
+            document.getElementById("detailNamaRegulasi").textContent = namaRegulasi;
+
+            const totalIndicator = activeIndikatorList.length;
+            const totalDokumen = activeIndikatorList.reduce((acc, item) => acc + (Number(item.jumlahDokumen) || 0), 0);
+
+            document.getElementById("detailTotalIndicator").textContent = totalIndicator;
+            document.getElementById("detailTotalDokumen").textContent = totalDokumen;
+
+            renderIndikatorCards();
+        }
+
+        function renderIndikatorCards() {
+            const container = document.getElementById("indikatorCardList");
+            const keyword = (document.getElementById("searchIndikator")?.value || "").trim().toLowerCase();
+
+            const filtered = activeIndikatorList.filter(item => {
+                if (!keyword) return true;
+                return (
+                    String(item.nomorIndikator || "").toLowerCase().includes(keyword) ||
+                    String(item.namaIndikator || "").toLowerCase().includes(keyword) ||
+                    String(item.deskripsiIndikator || "").toLowerCase().includes(keyword)
+                );
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-xs text-slate-500">
+                        Tidak ada indikator yang sesuai dengan kata kunci pencarian.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map((item, idx) => `
+                <div class="${idx > 0 ? 'border-t border-slate-800/90' : ''} hover:bg-[#131a29]/50 transition w-full">
+                    <div class="p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+                        <div class="space-y-1.5 flex-1 min-w-0">
+                            <p class="text-xs font-semibold text-blue-400">${item.nomorIndikator}</p>
+                            <h4 class="text-sm font-bold text-white leading-snug">${item.namaIndikator}</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed pt-0.5">${item.deskripsiIndikator}</p>
+                            <div class="flex flex-wrap items-center gap-5 text-xs pt-1">
+                                <span class="text-emerald-400 font-semibold whitespace-nowrap">Jumlah Sub Indikator: ${item.jumlahSubIndikator}</span>
+                                <span class="text-indigo-400 font-semibold whitespace-nowrap">Jumlah Dokumen: ${item.jumlahDokumen}</span>
+                            </div>
+                        </div>
+
+                        <a href="detail-indikator-dokumen.html?regulasi=${encodeURIComponent(activeNomorRegulasi)}&kode=${encodeURIComponent(item.nomorIndikator)}&nama=${encodeURIComponent(item.namaIndikator)}" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-blue-600/20 inline-flex items-center justify-center space-x-2 shrink-0 self-start lg:self-center">
+                            <i class="fa-solid fa-folder-open text-[11px]"></i>
+                            <span>Detail Indikator</span>
+                        </a>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", initDetailRegulasi);
+    </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Detail Regulasi & Komponen</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-6 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm">
+                        <span class="text-slate-500">Compliance</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <a href="list-dokumen.html" class="text-slate-500 hover:text-slate-300 transition">List Dokumen</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white" id="pageTitle">Detail Regulasi</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+                
+                <!-- Back Button & Header Title -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white tracking-tight" id="headerHeading">Rincian Daftar Regulasi & Dokumen</h2>
+                        <p class="text-xs text-slate-400 mt-0.5" id="headerSub">Memuat daftar peraturan dalam bentuk card beserta akumulasi indikator dan dokumen pendukung.</p>
+                    </div>
+                    <a href="list-dokumen.html" class="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center space-x-2 w-fit">
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                        <span>Kembali ke List Dokumen</span>
+                    </a>
+                </div>
+
+                <!-- 2 Card Informasi Statistik Utama (Total Indicator & Total Dokumen) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Card Statistik 1 -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-lg flex items-center justify-between">
+                        <div class="space-y-1">
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Jumlah Indikator</span>
+                            <h3 class="text-2xl font-bold text-white" id="statIndicator">68</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                    </div>
+
+                    <!-- Card Statistik 2 -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-lg flex items-center justify-between">
+                        <div class="space-y-1">
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Jumlah Dokumen</span>
+                            <h3 class="text-2xl font-bold text-white" id="statDokumen">142</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg">
+                            <i class="fa-solid fa-file-shield"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel Pencarian / Filter Card Regulasi -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-4 shadow-lg">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                        <div class="space-y-1.5">
+                            <label class="block text-[11px] font-medium text-slate-400 uppercase tracking-wider">Pencarian Regulasi</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                                <input type="text" id="filterKeyword" onkeyup="filterCards()" placeholder="Cari nomor atau nama regulasi..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-8 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                            </div>
+                        </div>
+                        <div>
+                            <button onclick="resetFilter()" class="w-full sm:w-auto px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-rotate-left text-[11px]"></i>
+                                <span>Reset Pencarian</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid Card Regulasi -->
+                <div id="regulasiCardContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    
+                    <!-- Card Regulasi 1 -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden flex flex-col justify-between hover:border-slate-700 transition regulasi-card" data-no="POJK No. 12/POJK.03/2025" data-nama="Penerapan Manajemen Risiko bagi Bank Umum dan Lembaga Keuangan">
+                        <div class="p-6 space-y-4">
+                            <div class="flex items-start justify-between gap-2">
+                                <span class="px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold text-[11px] no-peraturan">
+                                    POJK No. 12/POJK.03/2025
+                                </span>
+                                <span class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </span>
+                            </div>
+
+                            <h3 class="text-sm font-bold text-white leading-snug nama-regulasi">
+                                Penerapan Manajemen Risiko bagi Bank Umum dan Lembaga Keuangan
+                            </h3>
+
+                            <!-- Statistik dalam Card -->
+                            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800/80">
+                                <div class="bg-[#131a29]/70 border border-slate-800/80 rounded-lg p-3 text-center">
+                                    <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Total Indikator</span>
+                                    <span class="text-base font-bold text-blue-400">12</span>
+                                </div>
+                                <div class="bg-[#131a29]/70 border border-slate-800/80 rounded-lg p-3 text-center">
+                                    <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Total Dokumen</span>
+                                    <span class="text-base font-bold text-emerald-400">24</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Card: Tombol Aksi ke detail-indicator.html -->
+                        <div class="bg-[#131a29]/60 px-6 py-3 border-t border-slate-800">
+                            <a href="detail-indicator.html?regulasi=POJK%20No.%2012%2FPOJK.03%2F2025" class="w-full py-2 bg-slate-800 hover:bg-blue-600/20 text-slate-300 hover:text-blue-400 border border-slate-700/60 rounded-lg text-xs font-medium transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-eye text-[11px]"></i>
+                                <span>Buka Berkas Regulasi</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Card Regulasi 2 -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden flex flex-col justify-between hover:border-slate-700 transition regulasi-card" data-no="SEOJK No. 04/SEOJK.03/2026" data-nama="Pedoman Pelaksanaan Tata Kelola Perusahaan yang Baik (GCG)">
+                        <div class="p-6 space-y-4">
+                            <div class="flex items-start justify-between gap-2">
+                                <span class="px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold text-[11px] no-peraturan">
+                                    SEOJK No. 04/SEOJK.03/2026
+                                </span>
+                                <span class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </span>
+                            </div>
+
+                            <h3 class="text-sm font-bold text-white leading-snug nama-regulasi">
+                                Pedoman Pelaksanaan Tata Kelola Perusahaan yang Baik (GCG)
+                            </h3>
+
+                            <!-- Statistik dalam Card -->
+                            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800/80">
+                                <div class="bg-[#131a29]/70 border border-slate-800/80 rounded-lg p-3 text-center">
+                                    <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Total Indikator</span>
+                                    <span class="text-base font-bold text-blue-400">18</span>
+                                </div>
+                                <div class="bg-[#131a29]/70 border border-slate-800/80 rounded-lg p-3 text-center">
+                                    <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Total Dokumen</span>
+                                    <span class="text-base font-bold text-emerald-400">36</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Card: Tombol Aksi ke detail-indicator.html -->
+                        <div class="bg-[#131a29]/60 px-6 py-3 border-t border-slate-800">
+                            <a href="detail-indicator.html?regulasi=SEOJK%20No.%2004%2FSEOJK.03%2F2026" class="w-full py-2 bg-slate-800 hover:bg-blue-600/20 text-slate-300 hover:text-blue-400 border border-slate-700/60 rounded-lg text-xs font-medium transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-eye text-[11px]"></i>
+                                <span>Buka Berkas Regulasi</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Card Regulasi 3 -->
+                    <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden flex flex-col justify-between hover:border-slate-700 transition regulasi-card" data-no="UU No. 27 Tahun 2022" data-nama="Undang-Undang Pelindungan Data Pribadi (UU PDP)">
+                        <div class="p-6 space-y-4">
+                            <div class="flex items-start justify-between gap-2">
+                                <span class="px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold text-[11px] no-peraturan">
+                                    UU No. 27 Tahun 2022
+                                </span>
+                                <span class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </span>
+                            </div>
+
+                            <h3 class="text-sm font-bold text-white leading-snug nama-regulasi">
+                                Undang-Undang Pelindungan Data Pribadi (UU PDP)
+                            </h3>
+
+                            <!-- Statistik dalam Card -->
+                            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800/80">
+                                <div class="bg-[#131a29]/70 border border-slate-800/80 rounded-lg p-3 text-center">
+                                    <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Total Indikator</span>
+                                    <span class="text-base font-bold text-blue-400">22</span>
+                                </div>
+                                <div class="bg-[#131a29]/70 border border-slate-800/80 rounded-lg p-3 text-center">
+                                    <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Total Dokumen</span>
+                                    <span class="text-base font-bold text-emerald-400">48</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Card: Tombol Aksi ke detail-indicator.html -->
+                        <div class="bg-[#131a29]/60 px-6 py-3 border-t border-slate-800">
+                            <a href="detail-indicator.html?regulasi=UU%20No.%2027%20Tahun%202022" class="w-full py-2 bg-slate-800 hover:bg-blue-600/20 text-slate-300 hover:text-blue-400 border border-slate-700/60 rounded-lg text-xs font-medium transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-eye text-[11px]"></i>
+                                <span>Buka Berkas Regulasi</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- State Kosong jika Pencarian Card Tidak Ditemukan -->
+                <div id="emptySearchState" class="hidden bg-[#0b0f19] border border-slate-800/90 rounded-xl p-12 text-center text-slate-500 space-y-2">
+                    <i class="fa-regular fa-folder-open text-3xl mb-1 block text-slate-600"></i>
+                    <p class="text-xs font-medium text-slate-400">Tidak ada regulasi yang cocok dengan kata kunci pencarian Anda.</p>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../sidebar.js"></script>
+
+    <!-- Script Dynamic Label & Filter Card -->
+    <script>
+        // Menangkap parameter URL (?type=eksternal atau internal) untuk penyesuaian judul otomatis
+        const urlParams = new URLSearchParams(window.location.search);
+        const type = urlParams.get('type');
+
+        if (type === 'internal') {
+            document.getElementById('pageTitle').textContent = 'Detail Regulasi Internal';
+            document.getElementById('headerHeading').textContent = 'Rincian Regulasi & Dokumen Internal';
+            document.getElementById('headerSub').textContent = 'Memuat daftar Surat Keputusan (SK), SOP, dan kebijakan internal perusahaan dalam bentuk card.';
+            document.getElementById('statIndicator').textContent = '45';
+            document.getElementById('statDokumen').textContent = '96';
+        } else if (type === 'eksternal') {
+            document.getElementById('pageTitle').textContent = 'Detail Regulasi Eksternal';
+            document.getElementById('headerHeading').textContent = 'Rincian Regulasi & Dokumen Eksternal';
+            document.getElementById('headerSub').textContent = 'Memuat peraturan undang-undang dan ketentuan dari otoritas pengawas luar dalam bentuk card.';
+            document.getElementById('statIndicator').textContent = '68';
+            document.getElementById('statDokumen').textContent = '142';
+        }
+
+        function filterCards() {
+            const keyword = document.getElementById('filterKeyword').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.regulasi-card');
+            const emptyState = document.getElementById('emptySearchState');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const no = card.getAttribute('data-no').toLowerCase();
+                const nama = card.getAttribute('data-nama').toLowerCase();
+
+                if (no.includes(keyword) || nama.includes(keyword)) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        function resetFilter() {
+            document.getElementById('filterKeyword').value = '';
+            filterCards();
+        }
+    </script>
+</body>
+</html>

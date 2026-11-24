@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Struktur Organisasi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Connector garis bagan organisasi */
+        .org-children {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            padding-top: 1.75rem;
+        }
+        .org-children::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 1.75rem;
+            background-color: #334155;
+        }
+        .org-branch {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .org-branch::before,
+        .org-branch::after {
+            content: "";
+            position: absolute;
+            top: -1.75rem;
+            width: 50%;
+            height: 1.75rem;
+            border-top: 1px solid #334155;
+        }
+        .org-branch::before {
+            left: 0;
+        }
+        .org-branch::after {
+            right: 0;
+        }
+        .org-branch:first-child::before,
+        .org-branch:only-child::before {
+            border-top: none;
+        }
+        .org-branch:last-child::after,
+        .org-branch:only-child::after {
+            border-top: none;
+        }
+        .org-branch > .org-node-wrapper {
+            position: relative;
+        }
+        .org-branch > .org-node-wrapper::before {
+            content: "";
+            position: absolute;
+            top: -1.75rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 1.75rem;
+            background-color: #334155;
+        }
+        .org-root > .org-node-wrapper::before {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-6 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">Parameter</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="text-slate-500">Unit Organisasi</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Struktur Organisasi</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-5">
+                
+                <!-- Page Header & Action Buttons (Sync & + Add Unit) -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Organization Structure</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Manage company organization structure</p>
+                    </div>
+                    <div class="flex items-center space-x-2.5 shrink-0">
+                        <button type="button" onclick="handleSync()" class="px-3.5 py-2 bg-[#0b0f19] hover:bg-slate-800 text-slate-200 border border-slate-700/80 rounded-lg text-xs font-medium transition flex items-center space-x-2 shadow-sm">
+                            <i id="syncIcon" class="fa-solid fa-rotate text-[11px] text-slate-400"></i>
+                            <span>Sync</span>
+                        </button>
+                        <a href="tambah-unit.html" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-indigo-600/20 flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus text-[11px]"></i>
+                            <span>Add Unit</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Split Layout: Kiri (Tree Struktur Unit) & Kanan (Bagan Organisasi / Empty State) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 min-h-[560px]">
+                    
+                    <!-- PANEL KIRI: Pohon Struktur Unit -->
+                    <div class="lg:col-span-4 xl:col-span-4 bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl flex flex-col justify-between overflow-hidden">
+                        <div class="p-4 space-y-3 flex-1 overflow-y-auto custom-scrollbar">
+                            
+                            <!-- Search & Toolbar -->
+                            <div class="flex items-center space-x-2">
+                                <div class="relative flex-1">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                                    <input type="text" id="searchUnitInput" onkeyup="filterTree()" placeholder="Search by code or name..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                                </div>
+                                <button type="button" onclick="expandAllNodes()" title="Expand All" class="w-8 h-8 rounded-lg bg-[#131a29] hover:bg-slate-800 border border-slate-700/70 text-slate-400 hover:text-slate-200 flex items-center justify-center text-xs transition">
+                                    <i class="fa-solid fa-sitemap"></i>
+                                </button>
+                                <button type="button" onclick="collapseAllNodes()" title="Collapse All" class="w-8 h-8 rounded-lg bg-[#131a29] hover:bg-slate-800 border border-slate-700/70 text-slate-400 hover:text-slate-200 flex items-center justify-center text-xs transition">
+                                    <i class="fa-solid fa-bars"></i>
+                                </button>
+                            </div>
+
+                            <!-- Tree Container -->
+                            <div id="orgTreeContainer" class="space-y-1 pt-1 text-xs">
+                                
+                                <!-- LEVEL 1: Bank Kalsel -->
+                                <div class="tree-node" data-search="100 bank kalsel">
+                                    <div class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer select-none" onclick="toggleNodeChildren('bankKalselChildren', 'bankKalselChevron')">
+                                        <i id="bankKalselChevron" class="fa-solid fa-chevron-down text-[10px] text-slate-500 w-3 text-center transition-transform"></i>
+                                        <i class="fa-solid fa-folder text-amber-400 text-xs"></i>
+                                        <span data-unit-code="100" onclick="event.stopPropagation(); selectUnit('100')" class="unit-label font-semibold text-slate-200 hover:text-indigo-400 transition">
+                                            100 - Bank Kalsel
+                                        </span>
+                                    </div>
+
+                                    <!-- LEVEL 2: Direktur Utama -->
+                                    <div id="bankKalselChildren" class="pl-4 space-y-1 mt-0.5 border-l border-slate-800/80 ml-3.5">
+                                        
+                                        <div class="tree-node" data-search="1001 direktur utama">
+                                            <div class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer select-none" onclick="toggleNodeChildren('dirutChildren', 'dirutChevron')">
+                                                <i id="dirutChevron" class="fa-solid fa-chevron-down text-[10px] text-slate-500 w-3 text-center transition-transform"></i>
+                                                <i class="fa-solid fa-folder text-amber-400 text-xs"></i>
+                                                <span data-unit-code="1001" onclick="event.stopPropagation(); selectUnit('1001')" class="unit-label font-medium text-slate-200 hover:text-indigo-400 transition">
+                                                    1001 - Direktur Utama
+                                                </span>
+                                            </div>
+
+                                            <!-- LEVEL 3: Jajaran Direktur (Bisnis, Kepatuhan, Operasional) -->
+                                            <div id="dirutChildren" class="pl-4 space-y-1 mt-0.5 border-l border-slate-800/80 ml-3.5">
+                                                
+                                                <!-- 3A. Direktur Bisnis -->
+                                                <div class="tree-node" data-search="10011 direktur bisnis">
+                                                    <div class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer select-none" onclick="toggleNodeChildren('dirBisnisChildren', 'dirBisnisChevron')">
+                                                        <i id="dirBisnisChevron" class="fa-solid fa-chevron-down text-[10px] text-slate-500 w-3 text-center transition-transform"></i>
+                                                        <i class="fa-solid fa-folder text-amber-400 text-xs"></i>
+                                                        <span data-unit-code="10011" onclick="event.stopPropagation(); selectUnit('10011')" class="unit-label text-slate-300 hover:text-indigo-400 transition">
+                                                            10011 - Direktur Bisnis
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- LEVEL 4: Divisi di bawah Direktur Bisnis -->
+                                                    <div id="dirBisnisChildren" class="pl-4 space-y-1 mt-0.5 border-l border-slate-800/80 ml-3.5">
+                                                        <div class="tree-node" data-search="1001101 divisi dana & digital banking">
+                                                            <div data-unit-code="1001101" onclick="selectUnit('1001101')" class="unit-label flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer text-slate-400 hover:text-slate-200 transition">
+                                                                <i class="fa-regular fa-file-lines text-slate-500 text-xs"></i>
+                                                                <span>1001101 - Divisi Dana & Digital Banking</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tree-node" data-search="1001102 divisi jaringan & pelayanan cabang">
+                                                            <div data-unit-code="1001102" onclick="selectUnit('1001102')" class="unit-label flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer text-slate-400 hover:text-slate-200 transition">
+                                                                <i class="fa-regular fa-file-lines text-slate-500 text-xs"></i>
+                                                                <span>1001102 - Divisi Jaringan & Pelayanan Cabang</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 3B. Direktur Kepatuhan -->
+                                                <div class="tree-node" data-search="10012 direktur kepatuhan">
+                                                    <div class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer select-none" onclick="toggleNodeChildren('dirKepatuhanChildren', 'dirKepatuhanChevron')">
+                                                        <i id="dirKepatuhanChevron" class="fa-solid fa-chevron-down text-[10px] text-slate-500 w-3 text-center transition-transform"></i>
+                                                        <i class="fa-solid fa-folder text-amber-400 text-xs"></i>
+                                                        <span data-unit-code="10012" onclick="event.stopPropagation(); selectUnit('10012')" class="unit-label text-slate-300 hover:text-indigo-400 transition">
+                                                            10012 - Direktur Kepatuhan
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- LEVEL 4: Divisi di bawah Direktur Kepatuhan -->
+                                                    <div id="dirKepatuhanChildren" class="pl-4 space-y-1 mt-0.5 border-l border-slate-800/80 ml-3.5">
+                                                        <div class="tree-node" data-search="1001201 divisi human capital">
+                                                            <div data-unit-code="1001201" onclick="selectUnit('1001201')" class="unit-label flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer text-slate-400 hover:text-slate-200 transition">
+                                                                <i class="fa-regular fa-file-lines text-slate-500 text-xs"></i>
+                                                                <span>1001201 - Divisi Human Capital</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tree-node" data-search="1001202 divisi manajemen risiko & anti fraud">
+                                                            <div data-unit-code="1001202" onclick="selectUnit('1001202')" class="unit-label flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer text-slate-400 hover:text-slate-200 transition">
+                                                                <i class="fa-regular fa-file-lines text-slate-500 text-xs"></i>
+                                                                <span>1001202 - Divisi Manajemen Risiko & Anti Fraud</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 3C. Direktur Operasional -->
+                                                <div class="tree-node" data-search="10013 direktur operasional">
+                                                    <div class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer select-none" onclick="toggleNodeChildren('dirOperasionalChildren', 'dirOperasionalChevron')">
+                                                        <i id="dirOperasionalChevron" class="fa-solid fa-chevron-down text-[10px] text-slate-500 w-3 text-center transition-transform"></i>
+                                                        <i class="fa-solid fa-folder text-amber-400 text-xs"></i>
+                                                        <span data-unit-code="10013" onclick="event.stopPropagation(); selectUnit('10013')" class="unit-label text-slate-300 hover:text-indigo-400 transition">
+                                                            10013 - Direktur Operasional
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- LEVEL 4: Divisi di bawah Direktur Operasional -->
+                                                    <div id="dirOperasionalChildren" class="pl-4 space-y-1 mt-0.5 border-l border-slate-800/80 ml-3.5">
+                                                        <div class="tree-node" data-search="1001301 divisi pemulihan aset">
+                                                            <div data-unit-code="1001301" onclick="selectUnit('1001301')" class="unit-label flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer text-slate-400 hover:text-slate-200 transition">
+                                                                <i class="fa-regular fa-file-lines text-slate-500 text-xs"></i>
+                                                                <span>1001301 - Divisi Pemulihan Aset</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tree-node" data-search="1001302 divisi umum">
+                                                            <div data-unit-code="1001302" onclick="selectUnit('1001302')" class="unit-label flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-slate-800/50 cursor-pointer text-slate-400 hover:text-slate-200 transition">
+                                                                <i class="fa-regular fa-file-lines text-slate-500 text-xs"></i>
+                                                                <span>1001302 - Divisi Umum</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Footer Counter Tree -->
+                        <div class="px-4 py-2.5 bg-[#131a29]/70 border-t border-slate-800/80 text-[11px] text-slate-500 flex items-center justify-between">
+                            <span id="totalUnitsLabel">11 total units</span>
+                        </div>
+                    </div>
+
+                    <!-- PANEL KANAN: Bagan Tree Organisasi / Empty State -->
+                    <div id="rightChartPanel" class="lg:col-span-8 xl:col-span-8 bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl flex flex-col overflow-hidden relative">
+                        
+                        <!-- Toolbar Zoom & Kontrol Bagan (Muncul ketika unit dipilih) -->
+                        <div id="chartToolbar" class="hidden items-center justify-between px-4 py-2.5 border-b border-slate-800/80 bg-[#0d1220] shrink-0 z-10">
+                            <div class="flex items-center space-x-2 min-w-0">
+                                <span id="chartUnitBadge" class="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-400 border border-indigo-500/25 font-mono text-[11px] font-semibold shrink-0"></span>
+                                <span id="chartUnitTitle" class="text-xs font-semibold text-white truncate"></span>
+                            </div>
+                            <div class="flex items-center space-x-1 bg-[#131a29] border border-slate-700/70 rounded-lg px-2 py-1 text-xs text-slate-400 shrink-0">
+                                <button type="button" onclick="zoomOut()" title="Zoom Out" class="px-1.5 py-0.5 hover:text-white transition">
+                                    <i class="fa-solid fa-magnifying-glass-minus text-[11px]"></i>
+                                </button>
+                                <span id="zoomPercentLabel" class="px-1.5 font-mono text-[11px] text-slate-300 select-none">90%</span>
+                                <button type="button" onclick="zoomIn()" title="Zoom In" class="px-1.5 py-0.5 hover:text-white transition">
+                                    <i class="fa-solid fa-magnifying-glass-plus text-[11px]"></i>
+                                </button>
+                                <span class="h-3.5 w-[1px] bg-slate-700/80 mx-1"></span>
+                                <button type="button" onclick="resetZoom()" title="Reset View" class="px-1.5 py-0.5 hover:text-white transition">
+                                    <i class="fa-solid fa-maximize text-[11px]"></i>
+                                </button>
+                                <button type="button" onclick="toggleChartFullscreen()" title="Fullscreen" class="px-1.5 py-0.5 hover:text-white transition">
+                                    <i class="fa-solid fa-expand text-[11px]"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Empty State Default -->
+                        <div id="emptyUnitState" class="flex-1 flex flex-col justify-center items-center p-8 text-center space-y-2">
+                            <div class="w-12 h-12 rounded-full bg-slate-800/70 border border-slate-700/60 flex items-center justify-center mx-auto text-slate-500 text-lg mb-1">
+                                <i class="fa-solid fa-user-group"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-slate-200">Select a Unit</h3>
+                            <p class="text-xs text-slate-500 max-w-xs">Click on a unit in the tree to view its organization chart and employees</p>
+                        </div>
+
+                        <!-- Kanvas Bagan Tree Organisasi -->
+                        <div id="orgChartCanvasWrapper" class="hidden flex-1 overflow-auto custom-scrollbar p-8 bg-[#090d17]">
+                            <div id="orgChartScaleBox" class="min-w-max flex justify-center items-start origin-top transition-transform duration-150" style="transform: scale(0.9);">
+                                <div id="orgChartTree" class="flex flex-col items-center"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../../sidebar.js"></script>
+
+    <!-- Script Interaktif Tree, Bagan Organisasi & Zoom -->
+    <script>
+        // Data hierarki & anggota unit Bank Kalsel
+        const unitDataMap = {
+            "100": {
+                code: "100",
+                name: "Bank Kalsel",
+                parent: null,
+                employees: [
+                    { name: "Direktur Utama Bank Kalsel", role: "PIMPINAN TERTINGGI" }
+                ],
+                children: ["1001"]
+            },
+            "1001": {
+                code: "1001",
+                name: "Direktur Utama",
+                parent: "100",
+                employees: [
+                    { name: "Kepala Sekretariat & Pengawasan", role: "DIREKTUR UTAMA" }
+                ],
+                children: ["10011", "10012", "10013"]
+            },
+            "10011": {
+                code: "10011",
+                name: "Direktur Bisnis",
+                parent: "1001",
+                employees: [
+                    { name: "Pejabat Bisnis & Pengembangan", role: "DIREKTUR BISNIS" }
+                ],
+                children: ["1001101", "1001102"]
+            },
+            "1001101": {
+                code: "1001101",
+                name: "Divisi Dana & Digital Banking",
+                parent: "10011",
+                employees: [
+                    { name: "Rizky Pratama", role: "KEPALA DIVISI DANA & DIGITAL" },
+                    { name: "Nadia Kusuma", role: "OFFICER DIGITAL BANKING" }
+                ],
+                children: []
+            },
+            "1001102": {
+                code: "1001102",
+                name: "Divisi Jaringan & Pelayanan Cabang",
+                parent: "10011",
+                employees: [
+                    { name: "Hendra Wijaya", role: "KEPALA DIVISI JARINGAN CABANG" },
+                    { name: "Putri Maharani", role: "ANALIS LAYANAN CABANG" },
+                    { name: "Dimas Saputra", role: "STAF JARINGAN CABANG" }
+                ],
+                children: []
+            },
+            "10012": {
+                code: "10012",
+                name: "Direktur Kepatuhan",
+                parent: "1001",
+                employees: [
+                    { name: "Pejabat Kepatuhan & Risiko", role: "DIREKTUR KEPATUHAN" }
+                ],
+                children: ["1001201", "1001202"]
+            },
+            "1001201": {
+                code: "1001201",
+                name: "Divisi Human Capital",
+                parent: "10012",
+                employees: [
+                    { name: "Wahyu Hidayat", role: "KEPALA DIVISI HUMAN CAPITAL" }
+                ],
+                children: []
+            },
+            "1001202": {
+                code: "1001202",
+                name: "Divisi Manajemen Risiko & Anti Fraud",
+                parent: "10012",
+                employees: [
+                    { name: "Anisa Rahmawati", role: "KEPALA DIVISI RISIKO & ANTI FRAUD" },
+                    { name: "Bima Sakti", role: "COMPLIANCE & RISK ANALYST" }
+                ],
+                children: []
+            },
+            "10013": {
+                code: "10013",
+                name: "Direktur Operasional",
+                parent: "1001",
+                employees: [
+                    { name: "Pejabat Operasional & Aset", role: "DIREKTUR OPERASIONAL" }
+                ],
+                children: ["1001301", "1001302"]
+            },
+            "1001301": {
+                code: "1001301",
+                name: "Divisi Pemulihan Aset",
+                parent: "10013",
+                employees: [
+                    { name: "Fajar Nugroho", role: "KEPALA DIVISI PEMULIHAN ASET" }
+                ],
+                children: []
+            },
+            "1001302": {
+                code: "1001302",
+                name: "Divisi Umum",
+                parent: "10013",
+                employees: [
+                    { name: "Tari Wulandari", role: "KEPALA DIVISI UMUM" },
+                    { name: "Yusuf Maulana", role: "STAF LOGISTIK & UMUM" }
+                ],
+                children: []
+            }
+        };
+
+        let currentZoom = 0.9;
+        let selectedCode = null;
+
+        function getInitials(name) {
+            return name
+                .split(" ")
+                .filter(Boolean)
+                .slice(0, 2)
+                .map(part => part[0].toUpperCase())
+                .join("");
+        }
+
+        function renderChartNode(code, isRoot = false) {
+            const unit = unitDataMap[code];
+            if (!unit) return "";
+
+            const empCount = unit.employees.length;
+            const empLabel = empCount === 1 ? "1 employee" : `${empCount} employees`;
+
+            const employeesHtml = empCount > 0
+                ? `<div class="p-3 space-y-2.5 text-left">
+                    ${unit.employees.map(emp => `
+                        <div class="flex items-start space-x-2.5">
+                            <div class="w-7 h-7 rounded-full bg-slate-800 border border-slate-700/80 flex items-center justify-center text-[10px] font-semibold text-slate-300 shrink-0 mt-0.5">
+                                ${getInitials(emp.name)}
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-semibold text-slate-200 truncate">${emp.name}</p>
+                                <p class="text-[9px] uppercase tracking-wider text-slate-500 truncate">${emp.role}</p>
+                            </div>
+                        </div>
+                    `).join("")}
+                   </div>`
+                : `<div class="px-4 py-5 text-center text-[11px] italic text-slate-500">No employees</div>`;
+
+            const cardHtml = `
+                <div class="org-node-wrapper flex flex-col items-center">
+                    <div onclick="selectUnit('${unit.code}')" class="w-56 bg-[#111726] hover:bg-[#151d30] border border-slate-800 hover:border-indigo-500/50 rounded-xl shadow-lg overflow-hidden cursor-pointer transition">
+                        <div class="px-3.5 py-2.5 bg-[#151d30] border-b border-slate-800/90 text-center">
+                            <p class="text-[11px] font-bold uppercase tracking-wide text-white leading-snug">${unit.name}</p>
+                        </div>
+                        ${employeesHtml}
+                        <div class="px-3 py-1.5 bg-[#0e1320] border-t border-slate-800/80 text-center">
+                            <span class="text-[10px] text-slate-500">${empLabel}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const childrenHtml = unit.children && unit.children.length > 0
+                ? `<div class="org-children">
+                    ${unit.children.map(childCode => renderChartNode(childCode, false)).join("")}
+                   </div>`
+                : "";
+
+            return `
+                <div class="org-branch ${isRoot ? "org-root" : ""}">
+                    ${cardHtml}
+                    ${childrenHtml}
+                </div>
+            `;
+        }
+
+        function selectUnit(code) {
+            const unit = unitDataMap[code];
+            if (!unit) return;
+
+            selectedCode = code;
+
+            // Highlight label aktif pada tree kiri
+            document.querySelectorAll('.unit-label').forEach(el => {
+                if (el.getAttribute('data-unit-code') === code) {
+                    el.classList.add('text-indigo-400', 'bg-indigo-500/10', 'rounded');
+                } else {
+                    el.classList.remove('text-indigo-400', 'bg-indigo-500/10', 'rounded');
+                }
+            });
+
+            document.getElementById('emptyUnitState').classList.add('hidden');
+            document.getElementById('chartToolbar').classList.remove('hidden');
+            document.getElementById('chartToolbar').classList.add('flex');
+            document.getElementById('orgChartCanvasWrapper').classList.remove('hidden');
+
+            document.getElementById('chartUnitBadge').textContent = unit.code;
+            document.getElementById('chartUnitTitle').textContent = unit.name;
+
+            document.getElementById('orgChartTree').innerHTML = renderChartNode(code, true);
+        }
+
+        function applyZoom() {
+            const box = document.getElementById('orgChartScaleBox');
+            const label = document.getElementById('zoomPercentLabel');
+            box.style.transform = `scale(${currentZoom})`;
+            label.textContent = `${Math.round(currentZoom * 100)}%`;
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(1.4, +(currentZoom + 0.1).toFixed(2));
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.5, +(currentZoom - 0.1).toFixed(2));
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 0.9;
+            applyZoom();
+        }
+
+        function toggleChartFullscreen() {
+            const panel = document.getElementById('rightChartPanel');
+            if (!document.fullscreenElement) {
+                panel.requestFullscreen?.().catch(() => {});
+            } else {
+                document.exitFullscreen?.().catch(() => {});
+            }
+        }
+
+        function toggleNodeChildren(childrenId, chevronId) {
+            const children = document.getElementById(childrenId);
+            const chevron = document.getElementById(chevronId);
+            if (children) {
+                children.classList.toggle('hidden');
+            }
+            if (chevron) {
+                chevron.classList.toggle('fa-chevron-down');
+                chevron.classList.toggle('fa-chevron-right');
+            }
+        }
+
+        function expandAllNodes() {
+            document.querySelectorAll('#orgTreeContainer [id$="Children"]').forEach(el => {
+                el.classList.remove('hidden');
+            });
+            document.querySelectorAll('#orgTreeContainer [id$="Chevron"]').forEach(icon => {
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-down');
+            });
+        }
+
+        function collapseAllNodes() {
+            document.querySelectorAll('#orgTreeContainer [id$="Children"]').forEach(el => {
+                if (el.id !== 'bankKalselChildren') el.classList.add('hidden');
+            });
+            document.querySelectorAll('#orgTreeContainer [id$="Chevron"]').forEach(icon => {
+                if (icon.id !== 'bankKalselChevron') {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-right');
+                }
+            });
+        }
+
+        function filterTree() {
+            const query = document.getElementById('searchUnitInput').value.toLowerCase().trim();
+            const nodes = document.querySelectorAll('.tree-node');
+
+            if (!query) {
+                nodes.forEach(n => n.style.display = '');
+                return;
+            }
+
+            expandAllNodes();
+            nodes.forEach(node => {
+                const searchData = node.getAttribute('data-search') || '';
+                const textContent = node.textContent.toLowerCase();
+                if (searchData.includes(query) || textContent.includes(query)) {
+                    node.style.display = '';
+                } else {
+                    node.style.display = 'none';
+                }
+            });
+        }
+
+        function handleSync() {
+            const icon = document.getElementById('syncIcon');
+            icon.classList.add('fa-spin');
+            setTimeout(() => {
+                icon.classList.remove('fa-spin');
+                if (selectedCode) {
+                    selectUnit(selectedCode);
+                }
+                alert('Sinkronisasi struktur organisasi Bank Kalsel selesai.');
+            }, 600);
+        }
+    </script>
+</body>
+</html>

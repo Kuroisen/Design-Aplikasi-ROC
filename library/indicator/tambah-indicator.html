@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Tambah Indicator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm">
+                        <span class="text-slate-500">Library</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <a href="indicator.html" class="text-slate-500 hover:text-slate-300 transition">Indicator</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Tambah Indicator</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace (Full Kiri Kanan dengan padding px-8) -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+                
+                <!-- Back Button & Header Title -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-wide">Form Pembuatan Indicator</h2>
+                        <p class="text-xs text-slate-400 mt-1">Tambahkan data indikator baru beserta referensi regulasi, bobot penilaian, unit terkait, dan sub-indikator.</p>
+                    </div>
+                    <a href="indicator.html" class="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center space-x-2">
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                        <span>Kembali</span>
+                    </a>
+                </div>
+
+                <!-- Card Form (Full Width) -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden w-full">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-pie text-blue-500 text-sm"></i>
+                        <h3 class="text-sm font-semibold text-white tracking-wide">Informasi Rinci Indicator</h3>
+                    </div>
+
+                    <form onsubmit="handleFormSubmit(event)" class="p-8 space-y-6">
+                        
+                        <!-- Baris 1: Tahun & Periode -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Tahun <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="inputTahun" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                                    <option value="" disabled>Pilih Tahun</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026" selected>2026</option>
+                                    <option value="2027">2027</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Periode <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="inputPeriode" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                                    <option value="" disabled>Pilih Periode</option>
+                                    <option value="TW 1" selected>Triwulan 1 (TW 1)</option>
+                                    <option value="TW 2">Triwulan 2 (TW 2)</option>
+                                    <option value="TW 3">Triwulan 3 (TW 3)</option>
+                                    <option value="TW 4">Triwulan 4 (TW 4)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Baris 2: Regulasi & Nomor Regulasi (Otomatis) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Regulasi <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="inputRegulasi" onchange="updateRegulasiDetails()" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                                    <option value="" disabled>Pilih Regulasi</option>
+                                    <option value="Penerapan Manajemen Risiko" data-nomor="POJK/No.12/2026" data-base-bobot="25" selected>Penerapan Manajemen Risiko</option>
+                                    <option value="Ketentuan Pelaporan Devisa" data-nomor="SE-BI/24/DKMP" data-base-bobot="15">Ketentuan Pelaporan Devisa</option>
+                                    <option value="Tata Kelola Bank Umum" data-nomor="POJK/No.05/2026" data-base-bobot="30">Tata Kelola Bank Umum</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Nomor Regulasi <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="inputNomorRegulasi" readonly value="POJK/No.12/2026" class="w-full bg-[#131a29]/80 border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-blue-400 font-semibold focus:outline-none cursor-not-allowed">
+                            </div>
+                        </div>
+
+                        <!-- Baris 3: Total Bobot Indikator pada Regulasi & Kode Indicator -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Total Bobot Indikator pada Regulasi (%) <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="inputTotalBobotRegulasi" readonly value="45" class="w-full bg-[#131a29]/80 border border-slate-700/70 rounded-lg px-4 pr-10 py-2.5 text-xs text-emerald-400 font-semibold focus:outline-none cursor-not-allowed">
+                                    <span class="absolute right-4 top-2.5 text-xs text-slate-500 font-medium">%</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500">Nilai bertambah dari bobot dasar regulasi ditambah bobot yang Anda isikan.</p>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Kode Indicator <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="inputKodeIndicator" required value="IND-MR-01" placeholder="Contoh: IND-MR-01" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                            </div>
+                        </div>
+
+                        <!-- Baris 4: Indicator (Nama Indikator) & Bobot -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-2 space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Indicator (Nama Indikator) <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="inputIndicator" required value="Evaluasi Risiko Operasional dan Tata Kelola" placeholder="Masukkan nama atau deskripsi indikator utama..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Bobot (%) <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" id="inputBobot" oninput="hitungAkumulasiBobot()" min="0" max="100" value="20" required placeholder="Contoh: 20" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 pr-10 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                                    <span class="absolute right-4 top-2.5 text-xs text-slate-500 font-medium">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Baris 5: Pengisian Unit (Searchable & Multi-Select Dropdown) -->
+                        <div class="space-y-2 relative">
+                            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Unit Terkait <span class="text-rose-500">*</span>
+                            </label>
+                            
+                            <div id="unitDropdownToggle" onclick="toggleUnitDropdown()" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 flex items-center justify-between cursor-pointer focus:border-blue-500 transition">
+                                <div id="selectedUnitsBadgeContainer" class="flex flex-wrap gap-1.5 items-center">
+                                    <span class="text-slate-500">Pilih unit terkait (bisa lebih dari satu)...</span>
+                                </div>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-[10px] ml-2 shrink-0"></i>
+                            </div>
+
+                            <div id="unitDropdownMenu" class="hidden absolute left-0 right-0 mt-1 bg-[#131a29] border border-slate-700 rounded-xl shadow-2xl z-30 p-3 space-y-3">
+                                <div class="relative">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                                    <input type="text" id="unitSearchInput" onkeyup="filterUnitList()" placeholder="Cari unit..." class="w-full bg-[#0b0f19] border border-slate-700/70 rounded-lg pl-8 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500">
+                                </div>
+
+                                <div id="unitListContainer" class="max-h-48 overflow-y-auto custom-scrollbar space-y-1 pr-1">
+                                    <label class="flex items-center space-x-2 px-2 py-1.5 hover:bg-slate-800/60 rounded-md cursor-pointer unit-item text-xs text-slate-300">
+                                        <input type="checkbox" value="Satuan Kerja Manajemen Risiko" onchange="handleUnitSelection()" class="rounded border-slate-700 bg-[#0b0f19] text-blue-600 focus:ring-0">
+                                        <span>Satuan Kerja Manajemen Risiko (SKMR)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 px-2 py-1.5 hover:bg-slate-800/60 rounded-md cursor-pointer unit-item text-xs text-slate-300">
+                                        <input type="checkbox" value="Satuan Kerja Kepatuhan" onchange="handleUnitSelection()" class="rounded border-slate-700 bg-[#0b0f19] text-blue-600 focus:ring-0">
+                                        <span>Satuan Kerja Kepatuhan (SKK)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 px-2 py-1.5 hover:bg-slate-800/60 rounded-md cursor-pointer unit-item text-xs text-slate-300">
+                                        <input type="checkbox" value="Audit Internal" onchange="handleUnitSelection()" class="rounded border-slate-700 bg-[#0b0f19] text-blue-600 focus:ring-0">
+                                        <span>Audit Internal (SKAI)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 px-2 py-1.5 hover:bg-slate-800/60 rounded-md cursor-pointer unit-item text-xs text-slate-300">
+                                        <input type="checkbox" value="Treasury & International Banking" onchange="handleUnitSelection()" class="rounded border-slate-700 bg-[#0b0f19] text-blue-600 focus:ring-0">
+                                        <span>Treasury & International Banking</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Baris 6: Status Active Indicator -->
+                        <div class="space-y-2">
+                            <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Status Indicator
+                            </span>
+                            <label for="inputActiveIndicator" class="inline-flex items-center space-x-2.5 cursor-pointer select-none">
+                                <input type="checkbox" id="inputActiveIndicator" checked class="w-4 h-4 rounded border-slate-700 bg-[#131a29] text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600">
+                                <span class="text-xs font-medium text-slate-200">Active</span>
+                            </label>
+                        </div>
+
+                        <!-- DIVIDER SECTION: SUB INDICATOR (FULL WIDTH CARD LIST KE BAWAH) -->
+                        <div class="pt-6 border-t border-slate-800 space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div>
+                                    <h3 class="text-sm font-bold text-white uppercase tracking-wide">Sub Indicator</h3>
+                                    <p class="text-xs text-slate-400">Kelola sub-indikator dalam card berukuran penuh (full lebar) yang tersusun ke bawah.</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <!-- Ringkasan Info Sub Indicator (Menghitung Sub yang Active) -->
+                                    <div class="hidden sm:flex items-center space-x-4 bg-[#131a29] border border-slate-700/70 px-3 py-1.5 rounded-lg text-xs">
+                                        <div>
+                                            <span class="text-slate-400">Jumlah Sub: </span>
+                                            <span id="labelJumlahSub" class="font-semibold text-white">2</span>
+                                        </div>
+                                        <div class="border-l border-slate-700 pl-3">
+                                            <span class="text-slate-400">Jumlah Bobot Sub: </span>
+                                            <span id="labelTotalBobotSub" class="font-semibold text-emerald-400">20%</span>
+                                        </div>
+                                    </div>
+                                    <!-- Tombol Copy Another Indicator -->
+                                    <button type="button" onclick="openCopyModal()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center space-x-1.5">
+                                        <i class="fa-solid fa-copy text-slate-400"></i>
+                                        <span>Copy Another Indicator</span>
+                                    </button>
+                                    <button type="button" onclick="openSubModal()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition shadow-md flex items-center space-x-1.5">
+                                        <i class="fa-solid fa-plus"></i>
+                                        <span>Add Sub Indicator</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Container Daftar Card Sub Indicator -->
+                            <div id="subIndicatorContainer" class="space-y-3">
+                                <!-- Data Dummy / Dinamis -->
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-800">
+                            <a href="indicator.html" class="px-5 py-2.5 bg-transparent hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-medium transition">
+                                Batal
+                            </a>
+                            <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-blue-600/20 flex items-center space-x-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Simpan Indicator</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- MODAL FORM / INPUT SUB INDICATOR -->
+    <div id="subModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-lg p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="modalTitle" class="text-sm font-bold text-white">Tambah Sub Indicator Baru</h3>
+                <button type="button" onclick="closeSubModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <input type="hidden" id="editSubIndex" value="-1">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Kode Sub Indicator <span class="text-rose-500">*</span></label>
+                        <input type="text" id="modalKodeSub" placeholder="Contoh: SUB-01" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Bobot Sub (%) <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <input type="number" id="modalBobotSub" min="0" max="100" placeholder="Contoh: 10" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3 pr-8 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500">
+                            <span class="absolute right-3 top-2 text-xs text-slate-500">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Nama Sub Indicator <span class="text-rose-500">*</span></label>
+                    <input type="text" id="modalNamaSub" placeholder="Contoh: Kepatuhan pelaporan batas minimum..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Deskripsi Sub Indicator <span class="text-rose-500">*</span></label>
+                    <textarea id="modalDeskripsiSub" rows="3" placeholder="Masukkan penjelasan rinci mengenai sub indicator ini..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 custom-scrollbar"></textarea>
+                </div>
+                <div class="space-y-1.5">
+                    <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Status Sub Indicator</span>
+                    <label for="modalActiveSub" class="inline-flex items-center space-x-2.5 cursor-pointer select-none">
+                        <input type="checkbox" id="modalActiveSub" checked class="w-4 h-4 rounded border-slate-700 bg-[#131a29] text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600">
+                        <span class="text-xs font-medium text-slate-200">Active</span>
+                    </label>
+                </div>
+            </div>
+            <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-800">
+                <button type="button" onclick="closeSubModal()" class="px-4 py-2 bg-transparent hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-medium transition">Batal</button>
+                <button type="button" onclick="saveSubIndicator()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition">Simpan Sub Indicator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL COPY ANOTHER INDICATOR -->
+    <div id="copyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-copy text-blue-500"></i>
+                    <span>Copy Sub Indicator dari Regulasi Lain</span>
+                </h3>
+                <button type="button" onclick="closeCopyModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <!-- Pilih Regulasi Sumber -->
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Pilih Regulasi Sumber <span class="text-rose-500">*</span></label>
+                    <select id="copyRegulasiSelect" onchange="updateIndicatorOptions()" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+                        <option value="" disabled selected>Pilih Regulasi...</option>
+                        <option value="reg_1">POJK/No.12/2026 - Penerapan Manajemen Risiko</option>
+                        <option value="reg_2">SE-BI/24/DKMP - Ketentuan Pelaporan Devisa</option>
+                    </select>
+                </div>
+                <!-- Pilih Indicator Sumber -->
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Pilih Indicator Sumber <span class="text-rose-500">*</span></label>
+                    <select id="copyIndicatorSelect" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+                        <option value="" disabled selected>Pilih Regulasi terlebih dahulu...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-800">
+                <button type="button" onclick="closeCopyModal()" class="px-4 py-2 bg-transparent hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-medium transition">Batal</button>
+                <button type="button" onclick="executeCopySubIndicators()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-blue-600/20">Copy Sub Indicator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../sidebar.js"></script>
+
+    <!-- Script Utama -->
+    <script>
+        let baseBobotRegulasi = 25;
+        let selectedUnits = [];
+        let subIndicatorList = [
+            {
+                id: 1,
+                kode: 'SUB-MR-01',
+                nama: 'Pengawasan Aktif Direksi dan Dewan Komisaris',
+                bobot: 10,
+                deskripsi: 'Memastikan efektivitas pengawasan tata kelola manajemen risiko secara berkala oleh organ pengurus.',
+                active: true
+            },
+            {
+                id: 2,
+                kode: 'SUB-MR-02',
+                nama: 'Kecukupan Kebijakan dan Prosedur Manajemen Risiko',
+                bobot: 10,
+                deskripsi: 'Evaluasi kesesuaian SOP internal bank terhadap ketentuan terbaru dari Otoritas Jasa Keuangan.',
+                active: true
+            }
+        ];
+
+        // Database Simulasi Indikator & Sub Indikator Lain untuk Fitur Copy
+        const databaseMasterIndicators = {
+            'reg_1': [
+                {
+                    id: 'ind_101',
+                    nama: 'IND-MR-02: Manajemen Risiko Kredit & Likuiditas',
+                    subs: [
+                        { kode: 'SUB-KRD-01', nama: 'Analisis Kualitas Aset Produktif', bobot: 15, deskripsi: 'Evaluasi berkala terhadap portofolio kredit macet.', active: true },
+                        { kode: 'SUB-KRD-02', nama: 'Stress Testing Likuiditas Triwulanan', bobot: 10, deskripsi: 'Simulasi ketahanan arus kas bank terhadap skenario krisis.', active: true }
+                    ]
+                }
+            ],
+            'reg_2': [
+                {
+                    id: 'ind_201',
+                    nama: 'IND-DEV-01: Pelaporan Lalu Lintas Devisa',
+                    subs: [
+                        { kode: 'SUB-DEV-01', nama: 'Ketepatan Waktu Pelaporan Devisa Harian', bobot: 10, deskripsi: 'Kepatuhan penyampaian laporan devisa ke Bank Indonesia tepat waktu.', active: true },
+                        { kode: 'SUB-DEV-02', nama: 'Validasi Data Devisa Ekspor Impor', bobot: 5, deskripsi: 'Kesesuaian dokumen pendukung devisa hasil ekspor.', active: true }
+                    ]
+                }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSubCards();
+            updateSubSummary();
+            hitungAkumulasiBobot();
+
+            window.addEventListener('click', function(e) {
+                const toggle = document.getElementById('unitDropdownToggle');
+                const menu = document.getElementById('unitDropdownMenu');
+                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        });
+
+        // Unit Dropdown Functions
+        function toggleUnitDropdown() {
+            const menu = document.getElementById('unitDropdownMenu');
+            menu.classList.toggle('hidden');
+            if(!menu.classList.contains('hidden')) {
+                document.getElementById('unitSearchInput').focus();
+            }
+        }
+
+        function filterUnitList() {
+            const keyword = document.getElementById('unitSearchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.unit-item');
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(keyword) ? 'flex' : 'none';
+            });
+        }
+
+        function handleUnitSelection() {
+            const checkboxes = document.querySelectorAll('#unitListContainer input[type="checkbox"]');
+            selectedUnits = [];
+            checkboxes.forEach(cb => {
+                if(cb.checked) {
+                    selectedUnits.push(cb.value);
+                }
+            });
+            renderUnitBadges();
+        }
+
+        function renderUnitBadges() {
+            const container = document.getElementById('selectedUnitsBadgeContainer');
+            container.innerHTML = '';
+            if(selectedUnits.length === 0) {
+                container.innerHTML = '<span class="text-slate-500">Pilih unit terkait (bisa lebih dari satu)...</span>';
+                return;
+            }
+            selectedUnits.forEach(unit => {
+                const badge = document.createElement('span');
+                badge.className = 'inline-flex items-center px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[11px] font-medium';
+                badge.innerHTML = unit;
+                container.appendChild(badge);
+            });
+        }
+
+        function updateRegulasiDetails() {
+            const select = document.getElementById('inputRegulasi');
+            const selectedOption = select.options[select.selectedIndex];
+            baseBobotRegulasi = parseFloat(selectedOption.getAttribute('data-base-bobot')) || 0;
+            document.getElementById('inputNomorRegulasi').value = selectedOption.getAttribute('data-nomor') || '';
+            hitungAkumulasiBobot();
+        }
+
+        function hitungAkumulasiBobot() {
+            const inputBobotIndicator = parseFloat(document.getElementById('inputBobot').value) || 0;
+            document.getElementById('inputTotalBobotRegulasi').value = baseBobotRegulasi + inputBobotIndicator;
+        }
+
+        // Sub Indicator Modal Handler
+        function openSubModal(index = -1) {
+            document.getElementById('subModal').classList.remove('hidden');
+            document.getElementById('editSubIndex').value = index;
+
+            if (index > -1) {
+                const item = subIndicatorList[index];
+                document.getElementById('modalTitle').textContent = 'Edit Sub Indicator';
+                document.getElementById('modalKodeSub').value = item.kode;
+                document.getElementById('modalNamaSub').value = item.nama;
+                document.getElementById('modalBobotSub').value = item.bobot;
+                document.getElementById('modalDeskripsiSub').value = item.deskripsi;
+                document.getElementById('modalActiveSub').checked = item.active !== false;
+            } else {
+                document.getElementById('modalTitle').textContent = 'Tambah Sub Indicator Baru';
+                document.getElementById('modalKodeSub').value = 'SUB-MR-0' + (subIndicatorList.length + 1);
+                document.getElementById('modalNamaSub').value = '';
+                document.getElementById('modalBobotSub').value = '';
+                document.getElementById('modalDeskripsiSub').value = '';
+                document.getElementById('modalActiveSub').checked = true;
+            }
+        }
+
+        function closeSubModal() {
+            document.getElementById('subModal').classList.add('hidden');
+        }
+
+        function saveSubIndicator() {
+            const index = parseInt(document.getElementById('editSubIndex').value);
+            const kode = document.getElementById('modalKodeSub').value.trim();
+            const nama = document.getElementById('modalNamaSub').value.trim();
+            const bobot = parseFloat(document.getElementById('modalBobotSub').value) || 0;
+            const deskripsi = document.getElementById('modalDeskripsiSub').value.trim();
+            const active = document.getElementById('modalActiveSub').checked;
+
+            if (!kode || !nama || !deskripsi) {
+                alert('Kode, nama, dan deskripsi sub indicator wajib diisi!');
+                return;
+            }
+
+            if (index > -1) {
+                subIndicatorList[index] = { id: subIndicatorList[index].id, kode, nama, bobot, deskripsi, active };
+            } else {
+                subIndicatorList.push({ id: Date.now(), kode, nama, bobot, deskripsi, active });
+            }
+
+            closeSubModal();
+            renderSubCards();
+            updateSubSummary();
+        }
+
+        function toggleSubActive(index) {
+            if (subIndicatorList[index]) {
+                subIndicatorList[index].active = !(subIndicatorList[index].active !== false);
+                renderSubCards();
+                updateSubSummary();
+            }
+        }
+
+        // Copy Another Indicator Popup Handlers
+        function openCopyModal() {
+            document.getElementById('copyModal').classList.remove('hidden');
+            document.getElementById('copyRegulasiSelect').value = '';
+            document.getElementById('copyIndicatorSelect').innerHTML = '<option value="" disabled selected>Pilih Regulasi terlebih dahulu...</option>';
+        }
+
+        function closeCopyModal() {
+            document.getElementById('copyModal').classList.add('hidden');
+        }
+
+        function updateIndicatorOptions() {
+            const regVal = document.getElementById('copyRegulasiSelect').value;
+            const indSelect = document.getElementById('copyIndicatorSelect');
+            indSelect.innerHTML = '<option value="" disabled selected>Pilih Indicator...</option>';
+
+            if (databaseMasterIndicators[regVal]) {
+                databaseMasterIndicators[regVal].forEach(ind => {
+                    const opt = document.createElement('option');
+                    opt.value = ind.id;
+                    opt.textContent = ind.nama;
+                    indSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function executeCopySubIndicators() {
+            const regVal = document.getElementById('copyRegulasiSelect').value;
+            const indId = document.getElementById('copyIndicatorSelect').value;
+
+            if (!regVal || !indId) {
+                alert('Silakan pilih Regulasi dan Indicator sumber terlebih dahulu!');
+                return;
+            }
+
+            const indicators = databaseMasterIndicators[regVal];
+            const selectedInd = indicators.find(i => i.id === indId);
+
+            if (selectedInd && selectedInd.subs) {
+                selectedInd.subs.forEach(sub => {
+                    subIndicatorList.push({
+                        id: Date.now() + Math.random(),
+                        kode: sub.kode,
+                        nama: sub.nama,
+                        bobot: sub.bobot,
+                        deskripsi: sub.deskripsi,
+                        active: sub.active !== false
+                    });
+                });
+
+                renderSubCards();
+                updateSubSummary();
+                closeCopyModal();
+                alert('Sub indicator berhasil disalin dari regulasi terpilih!');
+            }
+        }
+
+        function renderSubCards() {
+            const container = document.getElementById('subIndicatorContainer');
+            
+            if (subIndicatorList.length === 0) {
+                container.innerHTML = `
+                    <p id="emptySubText" class="text-xs text-slate-500 italic py-6 text-center border border-dashed border-slate-800 rounded-xl bg-[#131a29]/40">
+                        Belum ada sub indicator ditambahkan. Klik "Add Sub Indicator" atau "Copy Another Indicator".
+                    </p>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            subIndicatorList.forEach((item, idx) => {
+                const isSubActive = item.active !== false;
+                const statusBadge = isSubActive
+                    ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-semibold">Active</span>`
+                    : `<span class="px-2 py-0.5 rounded-full bg-slate-700/40 text-slate-400 border border-slate-600/40 text-[10px] font-semibold">Inactive</span>`;
+
+                const card = document.createElement('div');
+                card.className = 'bg-[#131a29] border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md hover:border-slate-700 transition w-full';
+                card.innerHTML = `
+                    <div class="space-y-1 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-semibold text-[11px] border border-blue-500/20">${item.kode}</span>
+                            <h4 class="text-xs font-bold text-white tracking-wide">${item.nama}</h4>
+                            ${statusBadge}
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">${item.deskripsi}</p>
+                    </div>
+                    <div class="flex items-center justify-between md:justify-end space-x-4 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800">
+                        <label class="inline-flex items-center space-x-1.5 cursor-pointer select-none text-[11px] text-slate-300" title="Status Active Sub Indicator">
+                            <input type="checkbox" ${isSubActive ? 'checked' : ''} onchange="toggleSubActive(${idx})" class="w-3.5 h-3.5 rounded border-slate-700 bg-[#0b0f19] text-blue-600 focus:ring-0 cursor-pointer accent-blue-600">
+                            <span>Active</span>
+                        </label>
+                        <span class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold text-xs border border-emerald-500/20">Bobot: ${item.bobot}%</span>
+                        <div class="flex items-center space-x-1.5">
+                            <button type="button" onclick="openSubModal(${idx})" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-blue-600/20 text-slate-400 hover:text-blue-400 transition flex items-center justify-center" title="Edit">
+                                <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                            </button>
+                            <button type="button" onclick="deleteSubCard(${idx})" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-600/20 text-slate-400 hover:text-rose-400 transition flex items-center justify-center" title="Delete">
+                                <i class="fa-solid fa-trash-can text-[11px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function deleteSubCard(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus sub indicator ini?')) {
+                subIndicatorList.splice(index, 1);
+                renderSubCards();
+                updateSubSummary();
+            }
+        }
+
+        function updateSubSummary() {
+            const activeSubs = subIndicatorList.filter(item => item.active !== false);
+            const totalSubActive = activeSubs.length;
+            const totalBobotSubActive = activeSubs.reduce((acc, curr) => acc + (parseFloat(curr.bobot) || 0), 0);
+
+            document.getElementById('labelJumlahSub').textContent = totalSubActive;
+            document.getElementById('labelTotalBobotSub').textContent = totalBobotSubActive + '%';
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const tahun = document.getElementById('inputTahun').value;
+            const periode = document.getElementById('inputPeriode').value;
+            const regulasi = document.getElementById('inputRegulasi').value;
+            const nomor = document.getElementById('inputNomorRegulasi').value;
+            const totalBobotReg = document.getElementById('inputTotalBobotRegulasi').value;
+            const kode = document.getElementById('inputKodeIndicator').value;
+            const indicator = document.getElementById('inputIndicator').value;
+            const bobot = document.getElementById('inputBobot').value;
+            const isIndicatorActive = document.getElementById('inputActiveIndicator').checked;
+            const unitTerkait = selectedUnits.length > 0 ? selectedUnits.join(', ') : 'Belum dipilih';
+            const jumlahSubActive = document.getElementById('labelJumlahSub').textContent;
+            const totalBobotSubActive = document.getElementById('labelTotalBobotSub').textContent;
+
+            alert(`Indicator berhasil disimpan!\n\nKode: ${kode}\nNama: ${indicator}\nStatus Indicator: ${isIndicatorActive ? 'Active' : 'Inactive'}\nTahun: ${tahun} (${periode})\nRegulasi: ${regulasi} (${nomor})\nUnit Terkait: ${unitTerkait}\nTotal Bobot Indikator pada Regulasi: ${totalBobotReg}%\nBobot Indicator: ${bobot}%\nJumlah Sub Active: ${jumlahSubActive}\nJumlah Bobot Sub Active: ${totalBobotSubActive}`);
+            window.location.href = 'indicator.html';
+        }
+    </script>
+</body>
+</html>

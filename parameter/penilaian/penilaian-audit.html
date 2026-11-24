@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Penilaian Audit</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container" class="shrink-0"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-8 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">e-Compliance</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="text-slate-400">Parameter</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Penilaian Audit</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        Parameter Audit
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-6">
+
+                <!-- Page Header & Tombol Tambah Penilaian Audit -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-wide">Penilaian Audit</h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Kelola daftar parameter penilaian audit per tahun, nilai, dan status aktif/nonaktif.
+                        </p>
+                    </div>
+
+                    <a
+                        href="tambah-penilaian-audit.html"
+                        class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 transition cursor-pointer shrink-0"
+                    >
+                        <i class="fa-solid fa-plus mr-2"></i> Tambah Penilaian Audit
+                    </a>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl p-5 shadow-xl">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                        <!-- Pencarian Nama -->
+                        <div class="space-y-1.5">
+                            <label for="filterNama" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                Nama Penilaian
+                            </label>
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                                <input
+                                    type="text"
+                                    id="filterNama"
+                                    oninput="renderTable()"
+                                    placeholder="Cari nama penilaian audit..."
+                                    class="w-full rounded-lg bg-[#131a29] border border-slate-700/80 pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Filter Tahun -->
+                        <div class="space-y-1.5">
+                            <label for="filterTahun" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                Tahun
+                            </label>
+                            <select
+                                id="filterTahun"
+                                onchange="renderTable()"
+                                class="w-full rounded-lg bg-[#131a29] border border-slate-700/80 px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                            >
+                                <option value="ALL" class="bg-[#0b0f19]">Semua Tahun</option>
+                                <option value="2026" class="bg-[#0b0f19]">2026</option>
+                                <option value="2025" class="bg-[#0b0f19]">2025</option>
+                                <option value="2024" class="bg-[#0b0f19]">2024</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Status -->
+                        <div class="space-y-1.5">
+                            <label for="filterStatus" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                Status
+                            </label>
+                            <select
+                                id="filterStatus"
+                                onchange="renderTable()"
+                                class="w-full rounded-lg bg-[#131a29] border border-slate-700/80 px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                            >
+                                <option value="ALL" class="bg-[#0b0f19]">Semua Status</option>
+                                <option value="Active" class="bg-[#0b0f19]">Active</option>
+                                <option value="Inactive" class="bg-[#0b0f19]">Inactive</option>
+                            </select>
+                        </div>
+
+                        <!-- Reset Filter -->
+                        <div class="flex items-end">
+                            <button
+                                type="button"
+                                onclick="resetFilters()"
+                                class="w-full inline-flex items-center justify-center px-3.5 py-2 rounded-lg text-xs font-medium bg-slate-800/90 hover:bg-slate-700 text-slate-300 border border-slate-700/70 transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-rotate-left mr-2 text-slate-400"></i> Reset Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabel Penilaian Audit -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between gap-2">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-table-list text-blue-400 text-sm"></i>
+                            <h3 class="text-sm font-semibold text-white">Daftar Penilaian Audit</h3>
+                        </div>
+                        <span id="totalDataBadge" class="text-xs font-mono text-slate-400">0 Data</span>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-800 bg-[#0d121f] text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                    <th class="py-3.5 px-6">Tahun</th>
+                                    <th class="py-3.5 px-6">Nama</th>
+                                    <th class="py-3.5 px-6">Nilai</th>
+                                    <th class="py-3.5 px-6">Status</th>
+                                    <th class="py-3.5 pl-2 pr-4 text-center w-16">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="penilaianAuditTableBody" class="divide-y divide-slate-800/70">
+                                <!-- Di-render oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Modal Tambah / Edit Penilaian Audit -->
+    <div id="formModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+                <h3 id="formModalTitle" class="text-sm font-semibold text-white">Tambah Penilaian Audit</h3>
+                <button type="button" onclick="closeFormModal()" class="text-slate-400 hover:text-white cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="penilaianForm" onsubmit="handleSaveForm(event)" class="p-6 space-y-4 text-xs">
+                <input type="hidden" id="editItemId" />
+
+                <div class="space-y-1.5">
+                    <label for="inputTahun" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tahun</label>
+                    <input
+                        type="number"
+                        id="inputTahun"
+                        min="2000"
+                        max="2100"
+                        required
+                        placeholder="Contoh: 2026"
+                        class="w-full rounded-lg bg-[#131a29] border border-slate-700/80 px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    />
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputNama" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Nama</label>
+                    <input
+                        type="text"
+                        id="inputNama"
+                        required
+                        placeholder="Masukkan nama penilaian audit..."
+                        class="w-full rounded-lg bg-[#131a29] border border-slate-700/80 px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    />
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputNilai" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Nilai</label>
+                    <input
+                        type="number"
+                        id="inputNilai"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        required
+                        placeholder="Contoh: 90.00"
+                        class="w-full rounded-lg bg-[#131a29] border border-slate-700/80 px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    />
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputStatus" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Status</label>
+                    <select
+                        id="inputStatus"
+                        class="w-full rounded-lg bg-[#131a29] border border-slate-700/80 px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                    >
+                        <option value="Active" class="bg-[#0b0f19]">Active</option>
+                        <option value="Inactive" class="bg-[#0b0f19]">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="inputKeterangan" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Keterangan</label>
+                    <textarea
+                        id="inputKeterangan"
+                        rows="3"
+                        placeholder="Catatan atau kriteria penilaian audit..."
+                        class="w-full rounded-lg bg-[#131a29] border border-slate-700/80 px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    ></textarea>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end gap-2">
+                    <button
+                        type="button"
+                        onclick="closeFormModal()"
+                        class="px-4 py-2 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="submit"
+                        class="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition cursor-pointer"
+                    >
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detail Penilaian Audit -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-white">Detail Penilaian Audit</h3>
+                <button type="button" onclick="closeDetailModal()" class="text-slate-400 hover:text-white cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-[#131a29]/80 border border-slate-800 rounded-lg p-3">
+                        <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Tahun</span>
+                        <strong id="detailTahun" class="text-sm font-mono font-bold text-white mt-0.5 block">-</strong>
+                    </div>
+                    <div class="bg-[#131a29]/80 border border-slate-800 rounded-lg p-3">
+                        <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Nilai</span>
+                        <strong id="detailNilai" class="text-sm font-mono font-bold text-blue-300 mt-0.5 block">-</strong>
+                    </div>
+                </div>
+
+                <div class="bg-[#131a29]/80 border border-slate-800 rounded-lg p-3 space-y-1">
+                    <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Nama</span>
+                    <strong id="detailNama" class="text-sm font-semibold text-white block">-</strong>
+                </div>
+
+                <div class="bg-[#131a29]/80 border border-slate-800 rounded-lg p-3 space-y-1">
+                    <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Status</span>
+                    <span id="detailStatusBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border">-</span>
+                </div>
+
+                <div class="bg-[#131a29]/80 border border-slate-800 rounded-lg p-3 space-y-1">
+                    <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Keterangan</span>
+                    <p id="detailKeterangan" class="text-xs text-slate-300 leading-relaxed">-</p>
+                </div>
+
+                <div class="pt-2 flex justify-end">
+                    <button
+                        type="button"
+                        onclick="closeDetailModal()"
+                        class="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition cursor-pointer"
+                    >
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../sidebar.js"></script>
+
+    <script>
+        const STORAGE_KEY = "ecompliance_penilaian_audit_data";
+
+        function loadPenilaianAuditData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) return parsed;
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        function savePenilaianAuditData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(penilaianAuditData));
+            } catch (e) {}
+        }
+
+        const defaultPenilaianAuditData = [
+            {
+                id: "PA-001",
+                tahun: 2026,
+                nama: "Very High",
+                nilai: 100.00,
+                status: "Active",
+                keterangan: "Tingkat penilaian audit Very High dengan nilai 100."
+            },
+            {
+                id: "PA-002",
+                tahun: 2026,
+                nama: "High",
+                nilai: 80.00,
+                status: "Active",
+                keterangan: "Tingkat penilaian audit High dengan nilai 80."
+            },
+            {
+                id: "PA-003",
+                tahun: 2026,
+                nama: "Medium",
+                nilai: 60.00,
+                status: "Active",
+                keterangan: "Tingkat penilaian audit Medium dengan nilai 60."
+            },
+            {
+                id: "PA-004",
+                tahun: 2026,
+                nama: "Low",
+                nilai: 40.00,
+                status: "Active",
+                keterangan: "Tingkat penilaian audit Low dengan nilai 40."
+            },
+            {
+                id: "PA-005",
+                tahun: 2026,
+                nama: "Very Low",
+                nilai: 20.00,
+                status: "Active",
+                keterangan: "Tingkat penilaian audit Very Low dengan nilai 20."
+            }
+        ];
+
+        let penilaianAuditData = loadPenilaianAuditData() || [...defaultPenilaianAuditData];
+        if (!loadPenilaianAuditData()) {
+            savePenilaianAuditData();
+        }
+
+        let openDropdownId = null;
+
+        function toggleActionMenu(id, event) {
+            event.stopPropagation();
+            if (openDropdownId && openDropdownId !== id) {
+                const prev = document.getElementById(`action-menu-${openDropdownId}`);
+                if (prev) prev.classList.add("hidden");
+            }
+
+            const menu = document.getElementById(`action-menu-${id}`);
+            if (!menu) return;
+
+            menu.classList.toggle("hidden");
+            openDropdownId = menu.classList.contains("hidden") ? null : id;
+        }
+
+        document.addEventListener("click", function() {
+            if (openDropdownId) {
+                const menu = document.getElementById(`action-menu-${openDropdownId}`);
+                if (menu) menu.classList.add("hidden");
+                openDropdownId = null;
+            }
+        });
+
+        function resetFilters() {
+            document.getElementById("filterNama").value = "";
+            document.getElementById("filterTahun").value = "ALL";
+            document.getElementById("filterStatus").value = "ALL";
+            renderTable();
+        }
+
+        function getFilteredData() {
+            const namaQuery = (document.getElementById("filterNama")?.value || "").trim().toLowerCase();
+            const tahunFilter = document.getElementById("filterTahun")?.value || "ALL";
+            const statusFilter = document.getElementById("filterStatus")?.value || "ALL";
+
+            return penilaianAuditData.filter(item => {
+                const matchNama = !namaQuery || String(item.nama || "").toLowerCase().includes(namaQuery);
+                const matchTahun = tahunFilter === "ALL" || String(item.tahun) === tahunFilter;
+                const matchStatus = statusFilter === "ALL" || item.status === statusFilter;
+                return matchNama && matchTahun && matchStatus;
+            });
+        }
+
+        function getStatusBadge(status) {
+            if (status === "Active") {
+                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Active</span>`;
+            }
+            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-700/50 text-slate-400 border border-slate-600/50">Inactive</span>`;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("penilaianAuditTableBody");
+            const totalBadge = document.getElementById("totalDataBadge");
+            if (!tbody) return;
+
+            const filtered = getFilteredData();
+            if (totalBadge) {
+                totalBadge.textContent = `${filtered.length} Data`;
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-10 px-6 text-center text-xs text-slate-500 italic">
+                            Tidak ada data penilaian audit yang sesuai dengan filter.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const toggleLabel = item.status === "Active" ? "Inactive" : "Active";
+                const toggleIcon = item.status === "Active" ? "fa-toggle-off text-amber-400" : "fa-toggle-on text-emerald-400";
+
+                return `
+                    <tr class="hover:bg-slate-800/35 transition">
+                        <td class="py-3.5 px-6 font-mono font-semibold text-blue-300 whitespace-nowrap">${item.tahun}</td>
+                        <td class="py-3.5 px-6 font-medium text-white">${item.nama}</td>
+                        <td class="py-3.5 px-6 font-mono font-semibold text-slate-200 whitespace-nowrap">${Number(item.nilai).toFixed(2)}</td>
+                        <td class="py-3.5 px-6 whitespace-nowrap">${getStatusBadge(item.status)}</td>
+                        <td class="py-3.5 pl-2 pr-4 text-center whitespace-nowrap w-16 relative">
+                            <button
+                                type="button"
+                                onclick="toggleActionMenu('${item.id}', event)"
+                                title="Aksi"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+
+                            <div
+                                id="action-menu-${item.id}"
+                                onclick="event.stopPropagation()"
+                                class="hidden right-4 mt-1 w-40 rounded-xl bg-[#131a29] border border-slate-700/90 shadow-2xl py-1.5 z-30 text-left absolute"
+                            >
+                                <button
+                                    type="button"
+                                    onclick="openDetailModal('${item.id}')"
+                                    class="w-full flex items-center px-3.5 py-2 text-xs text-slate-200 hover:bg-slate-800 transition cursor-pointer"
+                                >
+                                    <i class="fa-solid fa-eye w-4 mr-2 text-blue-400"></i> Detail
+                                </button>
+                                <button
+                                    type="button"
+                                    onclick="openFormModal('edit', '${item.id}')"
+                                    class="w-full flex items-center px-3.5 py-2 text-xs text-slate-200 hover:bg-slate-800 transition cursor-pointer"
+                                >
+                                    <i class="fa-solid fa-pen-to-square w-4 mr-2 text-indigo-400"></i> Edit
+                                </button>
+                                <button
+                                    type="button"
+                                    onclick="toggleStatus('${item.id}')"
+                                    class="w-full flex items-center px-3.5 py-2 text-xs text-slate-200 hover:bg-slate-800 transition cursor-pointer"
+                                >
+                                    <i class="fa-solid ${toggleIcon} w-4 mr-2"></i> ${toggleLabel}
+                                </button>
+                                <div class="my-1 border-t border-slate-800"></div>
+                                <button
+                                    type="button"
+                                    onclick="deleteItem('${item.id}')"
+                                    class="w-full flex items-center px-3.5 py-2 text-xs text-rose-300 hover:bg-rose-500/15 transition cursor-pointer"
+                                >
+                                    <i class="fa-solid fa-trash w-4 mr-2 text-rose-400"></i> Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        function openFormModal(mode, id = null) {
+            if (openDropdownId) {
+                const menu = document.getElementById(`action-menu-${openDropdownId}`);
+                if (menu) menu.classList.add("hidden");
+                openDropdownId = null;
+            }
+
+            const modal = document.getElementById("formModal");
+            const title = document.getElementById("formModalTitle");
+            const editIdEl = document.getElementById("editItemId");
+            const tahunEl = document.getElementById("inputTahun");
+            const namaEl = document.getElementById("inputNama");
+            const nilaiEl = document.getElementById("inputNilai");
+            const statusEl = document.getElementById("inputStatus");
+            const ketEl = document.getElementById("inputKeterangan");
+
+            if (mode === "edit" && id) {
+                const item = penilaianAuditData.find(d => d.id === id);
+                if (!item) return;
+
+                title.textContent = "Edit Penilaian Audit";
+                editIdEl.value = item.id;
+                tahunEl.value = item.tahun;
+                namaEl.value = item.nama;
+                nilaiEl.value = item.nilai;
+                statusEl.value = item.status;
+                ketEl.value = item.keterangan || "";
+            } else {
+                title.textContent = "Tambah Penilaian Audit";
+                editIdEl.value = "";
+                tahunEl.value = "2026";
+                namaEl.value = "";
+                nilaiEl.value = "";
+                statusEl.value = "Active";
+                ketEl.value = "";
+            }
+
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function closeFormModal() {
+            const modal = document.getElementById("formModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
+        function handleSaveForm(event) {
+            event.preventDefault();
+
+            const editId = document.getElementById("editItemId").value;
+            const tahun = parseInt(document.getElementById("inputTahun").value, 10);
+            const nama = document.getElementById("inputNama").value.trim();
+            const nilai = parseFloat(document.getElementById("inputNilai").value);
+            const status = document.getElementById("inputStatus").value;
+            const keterangan = document.getElementById("inputKeterangan").value.trim();
+
+            if (!tahun || !nama || Number.isNaN(nilai)) return;
+
+            if (editId) {
+                const idx = penilaianAuditData.findIndex(d => d.id === editId);
+                if (idx !== -1) {
+                    penilaianAuditData[idx] = {
+                        ...penilaianAuditData[idx],
+                        tahun,
+                        nama,
+                        nilai,
+                        status,
+                        keterangan
+                    };
+                    savePenilaianAuditData();
+                }
+            } else {
+                const nextNum = penilaianAuditData.length + 1;
+                penilaianAuditData.unshift({
+                    id: `PA-${String(nextNum).padStart(3, "0")}-${Date.now().toString().slice(-3)}`,
+                    tahun,
+                    nama,
+                    nilai,
+                    status,
+                    keterangan
+                });
+            }
+
+            closeFormModal();
+            renderTable();
+        }
+
+        function toggleStatus(id) {
+            const item = penilaianAuditData.find(d => d.id === id);
+            if (!item) return;
+
+            item.status = item.status === "Active" ? "Inactive" : "Active";
+            savePenilaianAuditData();
+            openDropdownId = null;
+            renderTable();
+        }
+
+        function deleteItem(id) {
+            if (!confirm("Yakin ingin menghapus data penilaian audit ini?")) return;
+
+            penilaianAuditData = penilaianAuditData.filter(d => d.id !== id);
+            savePenilaianAuditData();
+            openDropdownId = null;
+            renderTable();
+        }
+
+        function openDetailModal(id) {
+            if (openDropdownId) {
+                const menu = document.getElementById(`action-menu-${openDropdownId}`);
+                if (menu) menu.classList.add("hidden");
+                openDropdownId = null;
+            }
+
+            const item = penilaianAuditData.find(d => d.id === id);
+            if (!item) return;
+
+            document.getElementById("detailTahun").textContent = item.tahun;
+            document.getElementById("detailNilai").textContent = Number(item.nilai).toFixed(2);
+            document.getElementById("detailNama").textContent = item.nama;
+            document.getElementById("detailKeterangan").textContent = item.keterangan || "-";
+
+            const badge = document.getElementById("detailStatusBadge");
+            badge.textContent = item.status;
+            badge.className = item.status === "Active"
+                ? "inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                : "inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-700/50 text-slate-400 border border-slate-600/50";
+
+            const modal = document.getElementById("detailModal");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById("detailModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
+        document.addEventListener("DOMContentLoaded", renderTable);
+    </script>
+</body>
+</html>

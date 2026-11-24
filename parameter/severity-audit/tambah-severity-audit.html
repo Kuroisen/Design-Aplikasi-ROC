@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Tambah Severity Audit</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-6 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">Parameter</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <a href="severity-audit.html" class="text-slate-500 hover:text-slate-300 transition">Severity Audit</a>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Tambah Severity Audit</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+                
+                <!-- Back Button & Header Title -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Tambah Severity Audit</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Isikan tahun, severity, bobot persentase, deskripsi, dan status keaktifannya.</p>
+                    </div>
+                    <a href="severity-audit.html" class="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center space-x-2 w-fit shrink-0">
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                        <span>Kembali ke Severity Audit</span>
+                    </a>
+                </div>
+
+                <!-- Form Card -->
+                <form onsubmit="handleFormSubmit(event)" class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="bg-[#131a29] px-6 py-4 border-b border-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-triangle-exclamation text-indigo-400 text-sm"></i>
+                        <h3 class="text-sm font-semibold text-white tracking-wide">Formulir Severity Audit</h3>
+                    </div>
+
+                    <div class="p-6 flex flex-col space-y-5 text-xs">
+                        
+                        <!-- 1. Tahun & Severity -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-2">
+                                <label for="inputTahun" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Tahun <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="inputTahun" value="2026" required placeholder="Contoh: 2026" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="inputSeverity" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    Severity <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="inputSeverity" required placeholder="Contoh: Critical, High, Medium, Low" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                            </div>
+                        </div>
+
+                        <!-- 2. Bobot (%) -->
+                        <div class="space-y-2">
+                            <label for="inputBobot" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Bobot (%) <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number" step="any" min="0" max="100" id="inputBobot" required placeholder="Contoh: 40" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-4 pr-10 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                                <span class="absolute right-4 top-2.5 text-xs font-semibold text-slate-400">%</span>
+                            </div>
+                        </div>
+
+                        <!-- 3. Deskripsi -->
+                        <div class="space-y-2">
+                            <label for="inputDeskripsi" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Deskripsi
+                            </label>
+                            <textarea id="inputDeskripsi" rows="3" placeholder="Tuliskan keterangan tingkat keparahan temuan audit..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"></textarea>
+                        </div>
+
+                        <!-- 4. Active Checkbox -->
+                        <div class="space-y-2">
+                            <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                Active
+                            </span>
+                            <label for="checkboxActiveSeverity" class="inline-flex items-center space-x-2.5 cursor-pointer select-none pt-0.5">
+                                <input type="checkbox" id="checkboxActiveSeverity" checked onchange="updateActiveLabel()" class="w-4 h-4 rounded border-slate-600 bg-[#131a29] text-blue-600 focus:ring-2 focus:ring-blue-500/40 cursor-pointer accent-blue-600">
+                                <span id="labelActiveSeverity" class="text-xs font-semibold text-emerald-400 transition">Aktif</span>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Tombol Aksi -->
+                    <div class="px-6 py-4 bg-[#131a29]/70 border-t border-slate-800 flex items-center justify-end space-x-3">
+                        <a href="severity-audit.html" class="px-5 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition">
+                            Batal
+                        </a>
+                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-indigo-600/20 flex items-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Simpan Severity</span>
+                        </button>
+                    </div>
+                </form>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal -->
+    <script src="../../sidebar.js"></script>
+
+    <!-- Script Active Checkbox & Submit Form -->
+    <script>
+        const STORAGE_KEY = "ecompliance_severity_audit_v3";
+
+        const defaultSeverity = [
+            { id: 1, tahun: "2026", severity: "Critical", bobot: 40, deskripsi: "Temuan kritis dengan dampak tinggi terhadap kepatuhan dan operasional.", status: "Aktif" },
+            { id: 2, tahun: "2026", severity: "High", bobot: 30, deskripsi: "Temuan tingkat tinggi yang memerlukan penanganan prioritas.", status: "Aktif" },
+            { id: 3, tahun: "2026", severity: "Medium", bobot: 20, deskripsi: "Temuan tingkat menengah dengan rencana perbaikan terukur.", status: "Aktif" },
+            { id: 4, tahun: "2026", severity: "Low", bobot: 10, deskripsi: "Temuan administratif atau minor.", status: "Aktif" }
+        ];
+
+        function updateActiveLabel() {
+            const checkbox = document.getElementById("checkboxActiveSeverity");
+            const label = document.getElementById("labelActiveSeverity");
+
+            if (checkbox.checked) {
+                label.textContent = "Aktif";
+                label.className = "text-xs font-semibold text-emerald-400 transition";
+            } else {
+                label.textContent = "Tidak Aktif";
+                label.className = "text-xs font-semibold text-slate-400 transition";
+            }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const tahun = document.getElementById("inputTahun").value.trim();
+            const severity = document.getElementById("inputSeverity").value.trim();
+            const bobot = Number(document.getElementById("inputBobot").value);
+            const deskripsi = document.getElementById("inputDeskripsi").value.trim() || "-";
+            const isActive = document.getElementById("checkboxActiveSeverity").checked;
+            const status = isActive ? "Aktif" : "Tidak Aktif";
+
+            if (!tahun || !severity) {
+                alert("Silakan isikan Tahun dan Severity terlebih dahulu.");
+                return;
+            }
+
+            if (Number.isNaN(bobot)) {
+                alert("Bobot harus berupa angka.");
+                return;
+            }
+
+            let existing = [];
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                existing = raw ? JSON.parse(raw) : [...defaultSeverity];
+                if (!Array.isArray(existing)) {
+                    existing = [...defaultSeverity];
+                }
+            } catch (e) {
+                existing = [...defaultSeverity];
+            }
+
+            const nextId = existing.length > 0
+                ? Math.max(...existing.map(s => Number(s.id) || 0)) + 1
+                : 1;
+
+            existing.push({
+                id: nextId,
+                tahun,
+                severity,
+                bobot,
+                deskripsi,
+                status
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+
+            alert(
+                `Data Severity Audit berhasil disimpan!\n\n` +
+                `Tahun: ${tahun}\n` +
+                `Severity: ${severity}\n` +
+                `Bobot: ${bobot}%\n` +
+                `Deskripsi: ${deskripsi}\n` +
+                `Status: ${status}`
+            );
+
+            window.location.href = "severity-audit.html";
+        }
+    </script>
+</body>
+</html>

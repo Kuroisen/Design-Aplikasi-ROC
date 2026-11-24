@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Compliance | Periode</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Scrollbar untuk Dark Theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1422] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- WADAH SIDEBAR OTOMATIS (Di-render oleh sidebar.js) -->
+        <div id="sidebar-container"></div>
+
+        <!-- AREA KONTEN UTAMA -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Header / Navbar -->
+            <header class="h-16 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between px-6 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <!-- Tombol Hamburger untuk Layar Mobile -->
+                    <button type="button" onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb / Judul Halaman -->
+                    <div class="flex items-center space-x-2 text-sm overflow-x-auto whitespace-nowrap">
+                        <span class="text-slate-500">Parameter</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <span class="text-slate-500">Periode</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                        <h1 class="font-semibold text-white">Periode</h1>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </header>
+
+            <!-- Main Workspace -->
+            <main class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-5">
+                
+                <!-- Page Header & Tombol Add Periode -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Periode</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Kelola daftar periode kepatuhan per tahun dan status keaktifannya.</p>
+                    </div>
+                    <a href="tambah-periode.html" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-indigo-600/20 flex items-center space-x-1.5 w-fit shrink-0">
+                        <i class="fa-solid fa-plus text-[11px]"></i>
+                        <span>Add Periode</span>
+                    </a>
+                </div>
+
+                <!-- Card Filter -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center text-xs">
+                        
+                        <!-- Filter Tahun -->
+                        <div class="md:col-span-3">
+                            <select id="filterTahun" onchange="applyFilters()" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition cursor-pointer">
+                                <option value="">Semua Tahun</option>
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Active -->
+                        <div class="md:col-span-3">
+                            <select id="filterActive" onchange="applyFilters()" class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition cursor-pointer">
+                                <option value="">Semua Active</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+
+                        <!-- Pencarian Periode -->
+                        <div class="md:col-span-4 relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                            <input type="text" id="filterNamaPeriode" oninput="applyFilters()" placeholder="Cari periode..." class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                        </div>
+
+                        <!-- Reset Filter -->
+                        <div class="md:col-span-2 flex justify-end">
+                            <button type="button" onclick="resetFilters()" class="w-full px-3.5 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-rotate-left text-[11px]"></i>
+                                <span>Reset</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Card Tabel: Tahun, Periode, Active, Aksi -->
+                <div class="bg-[#0b0f19] border border-slate-800/90 rounded-xl shadow-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-[#131a29] border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                                    <th class="py-3.5 px-6 w-28">Tahun</th>
+                                    <th class="py-3.5 px-6">Periode</th>
+                                    <th class="py-3.5 px-6 w-36 text-center">Active</th>
+                                    <th class="py-3.5 px-6 w-36 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="periodeTableBody" class="divide-y divide-slate-800/70"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer Info Jumlah Data -->
+                    <div class="px-6 py-3 bg-[#131a29]/60 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500">
+                        <span id="tableCountLabel">Menampilkan 0 data</span>
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Modal Edit Periode -->
+    <div id="editPeriodeModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="bg-[#131a29] px-5 py-3.5 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-pen-to-square text-amber-400 text-xs"></i>
+                    <h3 class="text-sm font-semibold text-white">Edit Periode</h3>
+                </div>
+                <button type="button" onclick="closeEditPeriodeModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleEditPeriodeSubmit(event)" class="p-5 space-y-4 text-xs">
+                <input type="hidden" id="editPeriodeId">
+
+                <div class="space-y-1.5">
+                    <label for="editTahun" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                        Tahun <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" id="editTahun" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="editNamaPeriode" class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                        Periode <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" id="editNamaPeriode" required class="w-full bg-[#131a29] border border-slate-700/70 rounded-lg px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+                </div>
+
+                <div class="pt-1">
+                    <label for="editActiveCheckbox" class="inline-flex items-center space-x-2.5 cursor-pointer select-none">
+                        <input type="checkbox" id="editActiveCheckbox" onchange="updateEditActiveLabel()" class="w-4 h-4 rounded border-slate-600 bg-[#131a29] text-blue-600 focus:ring-2 focus:ring-blue-500/40 cursor-pointer accent-blue-600">
+                        <span id="editActiveLabel" class="text-xs font-semibold text-emerald-400 transition">Active</span>
+                    </label>
+                </div>
+
+                <div class="pt-3 border-t border-slate-800 flex items-center justify-end space-x-2.5">
+                    <button type="button" onclick="closeEditPeriodeModal()" class="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-lg text-xs font-medium transition">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition shadow-lg shadow-indigo-600/20 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-floppy-disk text-[11px]"></i>
+                        <span>Update</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Panggil Script Sidebar Eksternal (3 level dari root folder) -->
+    <script src="../../../sidebar.js"></script>
+
+    <!-- Script Data, Filter & Aksi Periode -->
+    <script>
+        const STORAGE_KEY = "ecompliance_periode_periode_v1";
+
+        const defaultPeriodeList = [
+            { id: 1, tahun: "2026", periode: "Q1 Jan-Mar", activeStatus: "Active" },
+            { id: 2, tahun: "2026", periode: "Q2 Apr-Jun", activeStatus: "Active" },
+            { id: 3, tahun: "2026", periode: "Q3 Jul-Sep", activeStatus: "Inactive" },
+            { id: 4, tahun: "2026", periode: "Q4 Okt-Des", activeStatus: "Inactive" }
+        ];
+
+        function normalizeActiveValue(val) {
+            if (typeof val === "boolean") return val ? "Active" : "Inactive";
+            if (val === "Active" || val === "Aktif" || val === true) return "Active";
+            if (val === "Inactive" || val === "InActive" || val === "Tidak Aktif" || val === false) return "Inactive";
+            return "Active";
+        }
+
+        function normalizePeriodeItem(item, index) {
+            return {
+                id: item.id ?? index + 1,
+                tahun: String(item.tahun ?? "2026"),
+                periode: String(item.periode ?? item.nama ?? "-"),
+                activeStatus: normalizeActiveValue(item.activeStatus ?? item.active ?? item.status)
+            };
+        }
+
+        function loadPeriodeData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed.map(normalizePeriodeItem);
+                    }
+                } catch (e) {
+                    console.error("Gagal membaca data periode:", e);
+                }
+            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPeriodeList));
+            return defaultPeriodeList.map(normalizePeriodeItem);
+        }
+
+        let periodeList = loadPeriodeData();
+
+        function savePeriodeData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(periodeList));
+        }
+
+        function syncTahunFilterOptions() {
+            const select = document.getElementById("filterTahun");
+            const currentVal = select.value;
+            const yearsFromData = [...new Set(periodeList.map(p => String(p.tahun)).filter(Boolean))];
+            const baseYears = ["2026", "2025", "2024"];
+            const allYears = [...new Set([...yearsFromData, ...baseYears])].sort((a, b) => b.localeCompare(a));
+
+            select.innerHTML = `<option value="">Semua Tahun</option>` + allYears
+                .map(yr => `<option value="${yr}">${yr}</option>`)
+                .join("");
+
+            if (allYears.includes(currentVal)) {
+                select.value = currentVal;
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById("periodeTableBody");
+            const countLabel = document.getElementById("tableCountLabel");
+
+            if (!data.length) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="py-8 px-6 text-center text-xs text-slate-500">
+                            Tidak ada data periode yang sesuai dengan filter.
+                        </td>
+                    </tr>
+                `;
+                countLabel.textContent = "Menampilkan 0 data";
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => {
+                const isActive = item.activeStatus === "Active";
+                const badgeClass = isActive
+                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                    : "bg-slate-700/40 text-slate-400 border-slate-600/60";
+
+                const toggleIconClass = isActive
+                    ? "fa-solid fa-ban text-amber-400"
+                    : "fa-solid fa-circle-check text-emerald-400";
+                const toggleTitle = isActive ? "Set Inactive" : "Set Active";
+
+                return `
+                    <tr class="hover:bg-slate-800/40 transition">
+                        <td class="py-3.5 px-6 font-medium text-slate-300">${item.tahun}</td>
+                        <td class="py-3.5 px-6 font-semibold text-white">${item.periode}</td>
+                        <td class="py-3.5 px-6 text-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${badgeClass}">
+                                ${item.activeStatus}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-6 text-right">
+                            <div class="inline-flex items-center justify-end space-x-2">
+                                <button type="button" onclick="openEditPeriodeModal(${item.id})" title="Edit" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 transition">
+                                    <i class="fa-solid fa-pen-to-square text-xs text-indigo-400"></i>
+                                </button>
+                                <button type="button" onclick="toggleActiveStatus(${item.id})" title="${toggleTitle}" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-700/70 transition">
+                                    <i class="${toggleIconClass} text-xs"></i>
+                                </button>
+                                <button type="button" onclick="deletePeriode(${item.id})" title="Hapus" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+
+            countLabel.textContent = `Menampilkan ${data.length} dari ${periodeList.length} data`;
+        }
+
+        function updateEditActiveLabel() {
+            const checked = document.getElementById("editActiveCheckbox").checked;
+            const label = document.getElementById("editActiveLabel");
+            label.textContent = checked ? "Active" : "Inactive";
+            label.className = checked
+                ? "text-xs font-semibold text-emerald-400 transition"
+                : "text-xs font-semibold text-slate-400 transition";
+        }
+
+        function openEditPeriodeModal(id) {
+            const target = periodeList.find(p => p.id === id);
+            if (!target) return;
+
+            document.getElementById("editPeriodeId").value = target.id;
+            document.getElementById("editTahun").value = target.tahun;
+            document.getElementById("editNamaPeriode").value = target.periode;
+            document.getElementById("editActiveCheckbox").checked = target.activeStatus === "Active";
+            updateEditActiveLabel();
+
+            document.getElementById("editPeriodeModal").classList.remove("hidden");
+            document.getElementById("editNamaPeriode").focus();
+        }
+
+        function closeEditPeriodeModal() {
+            document.getElementById("editPeriodeModal").classList.add("hidden");
+        }
+
+        function handleEditPeriodeSubmit(event) {
+            event.preventDefault();
+            const id = Number(document.getElementById("editPeriodeId").value);
+            const tahun = document.getElementById("editTahun").value.trim();
+            const periode = document.getElementById("editNamaPeriode").value.trim();
+            const activeStatus = document.getElementById("editActiveCheckbox").checked ? "Active" : "Inactive";
+
+            if (!tahun || !periode) return;
+
+            const target = periodeList.find(p => p.id === id);
+            if (target) {
+                target.tahun = tahun;
+                target.periode = periode;
+                target.activeStatus = activeStatus;
+                savePeriodeData();
+                syncTahunFilterOptions();
+            }
+
+            closeEditPeriodeModal();
+            applyFilters();
+        }
+
+        function toggleActiveStatus(id) {
+            const target = periodeList.find(p => p.id === id);
+            if (!target) return;
+            target.activeStatus = target.activeStatus === "Active" ? "Inactive" : "Active";
+            savePeriodeData();
+            applyFilters();
+        }
+
+        function deletePeriode(id) {
+            const target = periodeList.find(p => p.id === id);
+            if (!target) return;
+            if (confirm(`Hapus periode "${target.periode}" (${target.tahun})?`)) {
+                periodeList = periodeList.filter(p => p.id !== id);
+                savePeriodeData();
+                syncTahunFilterOptions();
+                applyFilters();
+            }
+        }
+
+        function applyFilters() {
+            const tahunQuery = document.getElementById("filterTahun").value;
+            const activeQuery = document.getElementById("filterActive").value;
+            const namaQuery = document.getElementById("filterNamaPeriode").value.toLowerCase().trim();
+
+            const filtered = periodeList.filter(item => {
+                const matchTahun = !tahunQuery || String(item.tahun) === tahunQuery;
+                const matchActive = !activeQuery || item.activeStatus === activeQuery;
+                const matchNama = !namaQuery || item.periode.toLowerCase().includes(namaQuery);
+                return matchTahun && matchActive && matchNama;
+            });
+
+            renderTable(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById("filterTahun").value = "";
+            document.getElementById("filterActive").value = "";
+            document.getElementById("filterNamaPeriode").value = "";
+            renderTable(periodeList);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            syncTahunFilterOptions();
+            renderTable(periodeList);
+        });
+    </script>
+</body>
+</html>
